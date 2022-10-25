@@ -4,6 +4,7 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 export const Start = () => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -46,9 +47,11 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 33,
+    fontSize: 30,
     textAlign: 'center',
     paddingTop: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   termsBtn: {
     alignItems: 'center',
