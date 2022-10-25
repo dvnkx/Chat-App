@@ -1,4 +1,4 @@
-package com.app;
+package lisniak.chatapp;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

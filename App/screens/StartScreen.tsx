@@ -1,12 +1,18 @@
 import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 export const Start = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        <View>
+          <Image
+            style={styles.startImg}
+            source={require('../pictures/startpage.jpg')}
+          />
+        </View>
         <Text style={styles.text}>
           Connect easily with your family and friends over countries
         </Text>
@@ -32,6 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   content: {
     flexGrow: 3,
@@ -39,26 +46,31 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: 33,
     textAlign: 'center',
+    paddingTop: 20,
   },
   termsBtn: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 250,
-    height: 40,
+    width: 300,
+    height: 50,
     borderRadius: 35,
     marginBottom: 10,
   },
   startBtn: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 250,
-    height: 40,
+    width: 300,
+    height: 50,
     borderRadius: 35,
-    backgroundColor: '#398ad7',
+    backgroundColor: '#91b3fa',
   },
   buttons: {
     flex: 2,
+  },
+  startImg: {
+    width: '100%',
+    height: 300,
   },
 });

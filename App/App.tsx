@@ -3,18 +3,20 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Start} from './screens/StartScreen';
 import {Number} from './screens/NumberScreen';
-
 import {StyleSheet, useColorScheme} from 'react-native';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-
   const RootStack = createNativeStackNavigator();
 
   return (
     <NavigationContainer>
       <RootStack.Navigator>
-        <RootStack.Screen name="Start" component={Start} />
+        <RootStack.Screen
+          name="Start"
+          component={Start}
+          options={{headerShown: false}}
+        />
         <RootStack.Screen name="Number" component={Number} />
       </RootStack.Navigator>
     </NavigationContainer>
