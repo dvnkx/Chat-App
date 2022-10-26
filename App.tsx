@@ -7,16 +7,16 @@ import {
 } from '@react-navigation/stack';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Walkthrough} from './src/screens/Walkthrough';
-import {Login} from './src/screens/Login';
+import {SignIn} from './src/screens/SignIn';
 
 type RootStackParamList = {
   Walkthrough: {name: string};
-  Login: {name: string} | undefined;
+  SignIn: {name: string} | undefined;
 };
 
 export type NavigationProps = StackNavigationProp<RootStackParamList>;
 
-export type Props = NativeStackScreenProps<RootStackParamList, 'Walkthrough'>;
+export type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 const App = () => {
   const RootStack = createStackNavigator<RootStackParamList>();
@@ -27,31 +27,18 @@ const App = () => {
         <RootStack.Screen
           name="Walkthrough"
           component={Walkthrough}
-          options={{headerShown: false}}
+          options={{
+            headerShown: false,
+          }}
         />
-        <RootStack.Screen name="Login" component={Login} />
+        <RootStack.Screen
+          name="SignIn"
+          component={SignIn}
+          options={{headerBackTitleVisible: false, headerTitle: ''}}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
