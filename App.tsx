@@ -6,8 +6,8 @@ import {
   StackNavigationProp,
 } from '@react-navigation/stack';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {Walkthrough} from './screens/Walkthrough';
-import {Login} from './screens/Login';
+import {Walkthrough} from './src/screens/Walkthrough';
+import {Login} from './src/screens/Login';
 
 type RootStackParamList = {
   Walkthrough: {name: string};

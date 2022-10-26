@@ -1,9 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import type {NavigationProps} from '../App';
+import type {NavigationProps} from '../..App';
 import {ASSETS} from '../utils/assets';
 import {Routes} from '../utils/routes';
+
+// TODO: css fix (like at figma copy)
 
 export const Walkthrough = () => {
   const navigation = useNavigation<NavigationProps>();
