@@ -11,7 +11,7 @@ export const Walkthrough = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickNext = useCallback(() => {
-    navigation.navigate(Routes.SignIn);
+    navigation.navigate(Routes.SIGNIN);
   }, []);
 
   return (

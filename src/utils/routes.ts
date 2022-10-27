@@ -1,4 +1,4 @@
 export enum Routes {
-  Walkthrough = 'Walkthrough',
-  SignIn = 'SignIn',
+  WALKTHROUGH = 'Walkthrough',
+  SIGNIN = 'SignIn',
 }

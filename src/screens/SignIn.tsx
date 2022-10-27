@@ -1,11 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {SignInInput} from './Components/SignInInput';
+import {UIInput} from '../Components/UIInput';
 
 export const SignIn = () => {
   return (
     <View style={styles.container}>
-      <View style={{paddingTop: 79, paddingBottom: 5}}>
+      <View style={styles.textPos}>
         <Text style={{fontFamily: 'Mulish', fontSize: 24, textAlign: 'center'}}>
           Enter your email address and password
         </Text>
@@ -16,9 +16,13 @@ export const SignIn = () => {
         </Text>
       </View>
       <View style={styles.input}>
-        <SignInInput />
+        <UIInput
+          placeholder={'Enter your email'}
+          keyboardType={'email-address'}
+        />
+        <UIInput placeholder={'Enter your password'} />
       </View>
-      <View style={{alignItems: 'center', paddingTop: 195}}>
+      <View style={styles.buttons}>
         <View style={{paddingBottom: 15}}>
           <TouchableOpacity style={styles.signInBtn}>
             <Text style={{fontFamily: 'Mulish'}}>Sign in</Text>
@@ -45,6 +49,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  textPos: {
+    paddingTop: 79,
+    paddingBottom: 5,
+  },
   signInBtn: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -59,5 +67,9 @@ const styles = StyleSheet.create({
     width: 76,
     height: 25,
     borderRadius: 30,
+  },
+  buttons: {
+    alignItems: 'center',
+    paddingTop: 195,
   },
 });

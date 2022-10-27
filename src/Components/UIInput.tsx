@@ -1,17 +1,19 @@
-import {StyleSheet, TextInput, View} from 'react-native';
+import {KeyboardTypeOptions, StyleSheet, TextInput, View} from 'react-native';
 
-export const SignInInput = () => {
+interface IInputProps {
+  placeholder: string;
+  keyboardType?: KeyboardTypeOptions;
+}
+
+export const UIInput = (props: IInputProps) => {
   return (
     <View>
       <View style={{paddingBottom: 12}}>
         <TextInput
-          keyboardType="email-address"
-          placeholder="Enter your email"
+          placeholder={props.placeholder}
+          keyboardType={props.keyboardType}
           style={styles.input}
         />
-      </View>
-      <View>
-        <TextInput placeholder="Enter your password" style={styles.input} />
       </View>
     </View>
   );
