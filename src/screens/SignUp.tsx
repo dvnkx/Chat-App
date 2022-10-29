@@ -1,33 +1,32 @@
-import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {UIInput} from '../components/UIInput';
-import {useCallback} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import type {NavigationProps} from '../../App';
 import {Routes} from '../utils/routes';
+import {useNavigation} from '@react-navigation/native';
+import {useCallback} from 'react';
+import type {NavigationProps} from '../../App';
 import {useFormik} from 'formik';
-import {signInSchema} from '../utils/schemas';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import {useAppDispatch} from '../hooks/redux';
+import {signUpSchema} from '../utils/schemas';
+import {useAppDispatch, useAppSelector} from '../hooks/redux';
+import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 import {setUser} from '../store/slices/userSlice';
 
-export const SignIn = () => {
+export const SignUp = () => {
   const navigation = useNavigation<NavigationProps>();
-  const handleClickToSignUp = useCallback(() => {
-    navigation.navigate(Routes.SIGNUP);
-  }, []);
+
   const handleClickToConstacts = useCallback(() => {
     navigation.navigate(Routes.CONTACTS);
   }, []);
 
   const dispatch = useAppDispatch();
+  const {email, id} = useAppSelector(state => state.user);
 
   const {values, errors, isValid, handleChange} = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validationSchema: signInSchema,
+    validationSchema: signUpSchema,
     validateOnChange: true,
     onSubmit: values => {
       console.log(values);
@@ -36,12 +35,12 @@ export const SignIn = () => {
 
   const handleClick = () => {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, values.email, values.password)
+    createUserWithEmailAndPassword(auth, values.email, values.password)
       .then(({user}) => {
         console.log(user.email);
         dispatch(
           setUser({
-            emai: user.email,
+            email: user.email,
             id: user.uid,
           }),
         );
@@ -53,14 +52,7 @@ export const SignIn = () => {
   return (
     <View style={styles.container}>
       <View style={styles.textPos}>
-        <Text style={styles.signInText}>
-          Enter your email address and password
-        </Text>
-      </View>
-      <View>
-        <Text style={styles.signUpText}>
-          or sign up if you don`t have an account{' '}
-        </Text>
+        <Text style={styles.signUpText}>Sign up</Text>
       </View>
       <View style={styles.input}>
         <UIInput
@@ -77,20 +69,12 @@ export const SignIn = () => {
           error={errors.password}
         />
       </View>
-      <View style={styles.buttons}>
-        <View style={styles.signInBtnPos}>
-          <TouchableOpacity
-            style={styles.signInBtn}
-            onPress={handleClick}
-            disabled={!isValid}>
-            <Text style={styles.signInBtnText}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.btnPos}>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={handleClickToSignUp}
+          onPress={handleClick}
           disabled={!isValid}>
-          <Text style={styles.signUpBtnText}>Sign up</Text>
+          <Text style={styles.btnText}>Sign up</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -109,20 +93,13 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
-  textPos: {
-    paddingTop: 79,
-    paddingBottom: 5,
-  },
-  signInText: {
+  btnText: {
     fontFamily: 'Mulish',
-    fontSize: 24,
-    textAlign: 'center',
   },
-  signUpText: {
-    fontFamily: 'Mulish',
-    fontSize: 16,
+  btnPos: {
+    paddingTop: 274,
   },
-  signInBtn: {
+  signUpButton: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 327,
@@ -130,25 +107,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: '#91b3fa',
   },
-  signInBtnText: {
+  textPos: {
+    paddingTop: 79,
+    paddingBottom: 5,
+  },
+  signUpText: {
     fontFamily: 'Mulish',
-  },
-  signInBtnPos: {
-    paddingBottom: 15,
-  },
-
-  signUpButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 76,
-    height: 25,
-    borderRadius: 30,
-  },
-  signUpBtnText: {
-    fontFamily: 'Mulish',
-  },
-  buttons: {
-    alignItems: 'center',
-    paddingTop: 195,
+    fontSize: 24,
+    textAlign: 'center',
   },
 });
