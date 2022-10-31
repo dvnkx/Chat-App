@@ -3,4 +3,8 @@ export enum Routes {
   SIGNIN = 'SignIn',
   SIGNUP = 'SignUp',
   CONTACTS = 'Contacts',
+  PROFILEACCOUNT = 'ProfileAccount',
+  CHATS = 'Chats',
+  OPTIONS = 'Options',
+  TABS = 'Tabs',
 }

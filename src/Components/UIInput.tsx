@@ -1,4 +1,10 @@
-import {KeyboardTypeOptions, StyleSheet, TextInput, View} from 'react-native';
+import {
+  KeyboardTypeOptions,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 interface IInputProps {
   placeholder: string;
@@ -6,6 +12,7 @@ interface IInputProps {
   value: string;
   onChange: (text: string) => void;
   error?: string;
+  valueValidator?: string;
 }
 
 export const UIInput: React.FC<IInputProps> = props => {
@@ -20,6 +27,11 @@ export const UIInput: React.FC<IInputProps> = props => {
           props.error && props.value ? styles.notValidInput : styles.validInput
         }
       />
+      <View>
+        {props.error ? (
+          <Text style={styles.error}>Not valid properties</Text>
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -45,5 +57,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     paddingLeft: 10,
     fontFamily: 'Mulish',
+  },
+  error: {
+    fontFamily: 'Mulish',
+    fontSize: 10,
+    fontWeight: '500',
+    color: 'red',
+    paddingLeft: 10,
   },
 });

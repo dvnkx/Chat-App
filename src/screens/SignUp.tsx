@@ -6,48 +6,44 @@ import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import type {NavigationProps} from '../../App';
 import {useFormik} from 'formik';
-import {signUpSchema} from '../utils/schemas';
+import {authSchema} from '../utils/schemas';
 import {useAppDispatch, useAppSelector} from '../hooks/redux';
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 import {setUser} from '../store/slices/userSlice';
+import {app} from '../firebase/firebase';
 
 export const SignUp = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickToConstacts = useCallback(() => {
-    navigation.navigate(Routes.CONTACTS);
+    navigation.navigate(Routes.PROFILEACCOUNT);
   }, []);
 
   const dispatch = useAppDispatch();
-  const {email, id} = useAppSelector(state => state.user);
 
-  const {values, errors, isValid, handleChange} = useFormik({
+  const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validationSchema: signUpSchema,
+    validationSchema: authSchema,
     validateOnChange: true,
     onSubmit: values => {
-      console.log(values);
+      const auth = getAuth(app);
+      createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then(({user}) => {
+          console.log(user.email);
+          dispatch(
+            setUser({
+              email: user.email,
+              id: user.uid,
+            }),
+          );
+          handleClickToConstacts();
+        })
+        .catch(console.error);
     },
   });
-
-  const handleClick = () => {
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, values.email, values.password)
-      .then(({user}) => {
-        console.log(user.email);
-        dispatch(
-          setUser({
-            email: user.email,
-            id: user.uid,
-          }),
-        );
-        handleClickToConstacts();
-      })
-      .catch(console.error);
-  };
 
   return (
     <View style={styles.container}>
@@ -72,7 +68,7 @@ export const SignUp = () => {
       <View style={styles.btnPos}>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={handleClick}
+          onPress={handleSubmit}
           disabled={!isValid}>
           <Text style={styles.btnText}>Sign up</Text>
         </TouchableOpacity>

@@ -8,17 +8,22 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Walkthrough} from './src/screens/Walkthrough';
 import {SignIn} from './src/screens/SignIn';
 import {SignUp} from './src/screens/SignUp';
-import {Contacts} from './src/screens/Contacts';
 import {Provider} from 'react-redux';
 import {setStore} from './src/store/store';
 import './src/firebase/firebase';
 import {ShavronLeft} from './src/components/ChavronLeft';
+import {ProfileAccount} from './src/screens/ProfileAccount';
+import {Tabs} from './src/screens/Tabs';
 
 type RootStackParamList = {
   Walkthrough: {name: string};
   SignIn: {name: string} | undefined;
   SignUp: {name: string} | undefined;
   Contacts: {name: string} | undefined;
+  ProfileAccount: {name: string} | undefined;
+  Options: {name: string} | undefined;
+  Chats: {name: string} | undefined;
+  Tabs: {name?: string} | undefined;
 };
 
 export type NavigationProps = StackNavigationProp<RootStackParamList>;
@@ -61,7 +66,28 @@ const App = () => {
               headerBackImage: () => <ShavronLeft />,
             }}
           />
-          <RootStack.Screen name="Contacts" component={Contacts} />
+          <RootStack.Screen
+            name="ProfileAccount"
+            component={ProfileAccount}
+            options={{
+              headerBackTitle: 'Your Profile',
+              headerBackTitleStyle: {
+                fontFamily: 'Mulish',
+                fontSize: 18,
+                color: '#0F1829',
+              },
+              headerTitle: '',
+              headerShadowVisible: false,
+              headerBackImage: () => <ShavronLeft />,
+            }}
+          />
+          <RootStack.Screen
+            name="Tabs"
+            component={Tabs}
+            options={{
+              headerShown: false,
+            }}
+          />
         </RootStack.Navigator>
       </Provider>
     </NavigationContainer>

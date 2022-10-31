@@ -6,10 +6,11 @@ import {useNavigation} from '@react-navigation/native';
 import type {NavigationProps} from '../../App';
 import {Routes} from '../utils/routes';
 import {useFormik} from 'formik';
-import {signInSchema} from '../utils/schemas';
+import {authSchema} from '../utils/schemas';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import {useAppDispatch} from '../hooks/redux';
 import {setUser} from '../store/slices/userSlice';
+import {app} from '../firebase/firebase';
 
 export const SignIn = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -17,38 +18,34 @@ export const SignIn = () => {
     navigation.navigate(Routes.SIGNUP);
   }, []);
   const handleClickToConstacts = useCallback(() => {
-    navigation.navigate(Routes.CONTACTS);
+    navigation.navigate(Routes.TABS);
   }, []);
 
   const dispatch = useAppDispatch();
 
-  const {values, errors, isValid, handleChange} = useFormik({
+  const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validationSchema: signInSchema,
+    validationSchema: authSchema,
     validateOnChange: true,
     onSubmit: values => {
-      console.log(values);
+      const auth = getAuth(app);
+      signInWithEmailAndPassword(auth, values.email, values.password)
+        .then(({user}) => {
+          console.log(user.email);
+          dispatch(
+            setUser({
+              emai: user.email,
+              id: user.uid,
+            }),
+          );
+          handleClickToConstacts();
+        })
+        .catch(console.error);
     },
   });
-
-  const handleClick = () => {
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, values.email, values.password)
-      .then(({user}) => {
-        console.log(user.email);
-        dispatch(
-          setUser({
-            emai: user.email,
-            id: user.uid,
-          }),
-        );
-        handleClickToConstacts();
-      })
-      .catch(console.error);
-  };
 
   return (
     <View style={styles.container}>
@@ -69,6 +66,7 @@ export const SignIn = () => {
           value={values.email}
           onChange={handleChange('email')}
           error={errors.email}
+          valueValidator={'email'}
         />
         <UIInput
           placeholder={'Enter your password'}
@@ -81,7 +79,7 @@ export const SignIn = () => {
         <View style={styles.signInBtnPos}>
           <TouchableOpacity
             style={styles.signInBtn}
-            onPress={handleClick}
+            onPress={handleSubmit}
             disabled={!isValid}>
             <Text style={styles.signInBtnText}>Sign in</Text>
           </TouchableOpacity>
