@@ -12,7 +12,6 @@ interface IInputProps {
   value: string;
   onChange: (text: string) => void;
   error?: string;
-  valueValidator?: string;
 }
 
 export const UIInput: React.FC<IInputProps> = props => {

@@ -1,23 +1,23 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {UIInput} from '../components/UIInput';
+import {UIInput} from '../Components/UIInput';
 import {useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProps} from '../../App';
 import {Routes} from '../utils/routes';
 import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
+import {signInWithEmailAndPassword} from 'firebase/auth';
 import {useAppDispatch} from '../hooks/redux';
 import {setUser} from '../store/slices/userSlice';
-import {app} from '../firebase/firebase';
+import {auth} from '../firebase/firebase';
 
 export const SignIn = () => {
   const navigation = useNavigation<NavigationProps>();
   const handleClickToSignUp = useCallback(() => {
     navigation.navigate(Routes.SIGNUP);
   }, []);
-  const handleClickToConstacts = useCallback(() => {
+  const handleClickToContacts = useCallback(() => {
     navigation.navigate(Routes.TABS);
   }, []);
 
@@ -31,7 +31,6 @@ export const SignIn = () => {
     validationSchema: authSchema,
     validateOnChange: true,
     onSubmit: values => {
-      const auth = getAuth(app);
       signInWithEmailAndPassword(auth, values.email, values.password)
         .then(({user}) => {
           console.log(user.email);
@@ -41,7 +40,6 @@ export const SignIn = () => {
               id: user.uid,
             }),
           );
-          handleClickToConstacts();
         })
         .catch(console.error);
     },
@@ -66,7 +64,6 @@ export const SignIn = () => {
           value={values.email}
           onChange={handleChange('email')}
           error={errors.email}
-          valueValidator={'email'}
         />
         <UIInput
           placeholder={'Enter your password'}
@@ -114,11 +111,13 @@ const styles = StyleSheet.create({
   signInText: {
     fontFamily: 'Mulish',
     fontSize: 24,
+    fontWeight: '700',
     textAlign: 'center',
   },
   signUpText: {
     fontFamily: 'Mulish',
-    fontSize: 16,
+    fontWeight: '400',
+    fontSize: 14,
   },
   signInBtn: {
     justifyContent: 'center',
@@ -130,6 +129,8 @@ const styles = StyleSheet.create({
   },
   signInBtnText: {
     fontFamily: 'Mulish',
+    fontWeight: '600',
+    fontSize: 16,
   },
   signInBtnPos: {
     paddingBottom: 15,
@@ -144,6 +145,8 @@ const styles = StyleSheet.create({
   },
   signUpBtnText: {
     fontFamily: 'Mulish',
+    fontWeight: '600',
+    fontSize: 16,
   },
   buttons: {
     alignItems: 'center',

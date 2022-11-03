@@ -10,7 +10,7 @@ import {useCallback} from 'react';
 export const More = () => {
   const navigation = useNavigation<NavigationProps>();
   const {email} = useAppSelector(state => state.user);
-  const {name, surname} = useAppSelector(state => state.data);
+  const {name, surname} = useAppSelector(state => state.user);
 
   const handleClickToProfile = useCallback(() => {
     navigation.navigate(Routes.PROFILEACCOUNT);
@@ -18,27 +18,24 @@ export const More = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.introPos}>
-        <Text style={styles.intro}>More</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>More</Text>
       </View>
-      <View style={styles.pos}>
-        <View style={styles.profileContent}>
-          <TouchableOpacity
-            style={styles.profileBtn}
-            onPress={handleClickToProfile}>
-            <View style={styles.imgPos}>
-              <Image style={styles.avatar} source={ASSETS.defaultAvatarImage} />
-              <View style={styles.datapos}>
-                <Text style={styles.text}>
-                  {name} {surname}
-                </Text>
-                <Text style={styles.email}>{email}</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
+      <View style={styles.content}>
+        <View style={styles.button}>
+          <TouchableOpacity onPress={handleClickToProfile}>
+            <Image style={styles.profileImg} source={ASSETS.avatar} />
+            <View>
+              <Text>Name</Text>
+              <Text>Email</Text>
+            </View>
+            <View>
+              <Image style={styles.chevron} source={ASSETS.chevronRight} />
             </View>
           </TouchableOpacity>
+        </View>
+        <View style={{width: '100%', backgroundColor: 'yellow'}}>
+          <Text>Another person</Text>
         </View>
       </View>
     </View>
@@ -52,59 +49,34 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#fff',
   },
-  introPos: {
-    paddingTop: 47,
-    paddingBottom: 21,
+  header: {
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    paddingTop: 57,
     paddingLeft: 24,
     paddingRight: 24,
+    paddingBottom: 13,
   },
-  intro: {
+  headerText: {
     fontFamily: 'Mulish',
     fontWeight: '600',
-    fontSize: 18,
+    fontSize: 16,
   },
-  profileBtn: {
-    backgroundColor: '#fff',
+  content: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: 327,
+    height: 68,
   },
-  imgPos: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  text: {
-    fontFamily: 'Mulish',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  email: {
-    fontFamily: 'Mulish',
-    fontSize: 12,
-    fontWeight: '400',
-    color: 'adb5bd',
-  },
-  pos: {
-    flexDirection: 'row',
-  },
-  avatar: {
-    width: 49.1,
-    height: 50,
+  profileImg: {
+    width: 47,
+    height: 47,
   },
   chevron: {
     width: 24,
     height: 24,
   },
-  chevronPos: {
-    paddingRight: 16,
-    justifyContent: 'center',
-  },
-  profileContent: {
-    paddingLeft: 16,
-    paddingRight: 16,
-    width: '100%',
-  },
-  datapos: {
-    paddingRight: 139,
-    paddingLeft: 20,
-    flexDirection: 'column',
-    padding: 10,
+  button: {
+    backgroundColor: 'blue',
   },
 });

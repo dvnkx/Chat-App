@@ -11,7 +11,7 @@ import {SignUp} from './src/screens/SignUp';
 import {Provider} from 'react-redux';
 import {setStore} from './src/store/store';
 import './src/firebase/firebase';
-import {ShavronLeft} from './src/components/ChavronLeft';
+import {ShavronLeft} from './src/Components/ChavronLeft';
 import {ProfileAccount} from './src/screens/ProfileAccount';
 import {Tabs} from './src/screens/Tabs';
 
@@ -35,6 +35,13 @@ const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const store = setStore();
 
+  const authSettings = {
+    headerBackTitleVisible: false,
+    headerTitle: '',
+    headerShadowVisible: false,
+    headerBackImage: () => <ShavronLeft />,
+  };
+
   return (
     <NavigationContainer>
       <Provider store={store}>
@@ -49,22 +56,12 @@ const App = () => {
           <RootStack.Screen
             name="SignIn"
             component={SignIn}
-            options={{
-              headerBackTitleVisible: false,
-              headerTitle: '',
-              headerShadowVisible: false,
-              headerBackImage: () => <ShavronLeft />,
-            }}
+            options={authSettings}
           />
           <RootStack.Screen
             name="SignUp"
             component={SignUp}
-            options={{
-              headerBackTitleVisible: false,
-              headerTitle: '',
-              headerShadowVisible: false,
-              headerBackImage: () => <ShavronLeft />,
-            }}
+            options={authSettings}
           />
           <RootStack.Screen
             name="ProfileAccount"

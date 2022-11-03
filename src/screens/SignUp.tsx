@@ -1,25 +1,21 @@
 import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {UIInput} from '../components/UIInput';
+import {UIInput} from '../Components/UIInput';
 import {Routes} from '../utils/routes';
 import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import type {NavigationProps} from '../../App';
 import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
-import {useAppDispatch, useAppSelector} from '../hooks/redux';
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import {setUser} from '../store/slices/userSlice';
-import {app} from '../firebase/firebase';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../firebase/firebase';
 
 export const SignUp = () => {
   const navigation = useNavigation<NavigationProps>();
 
-  const handleClickToConstacts = useCallback(() => {
+  const handleClickToProfile = useCallback(() => {
     navigation.navigate(Routes.PROFILEACCOUNT);
   }, []);
-
-  const dispatch = useAppDispatch();
 
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
@@ -29,19 +25,12 @@ export const SignUp = () => {
     validationSchema: authSchema,
     validateOnChange: true,
     onSubmit: values => {
-      const auth = getAuth(app);
       createUserWithEmailAndPassword(auth, values.email, values.password)
         .then(({user}) => {
-          console.log(user.email);
-          dispatch(
-            setUser({
-              email: user.email,
-              id: user.uid,
-            }),
-          );
-          handleClickToConstacts();
+          console.log(user);
         })
         .catch(console.error);
+      handleClickToProfile();
     },
   });
 
@@ -91,6 +80,8 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontFamily: 'Mulish',
+    fontWeight: '600',
+    fontSize: 16,
   },
   btnPos: {
     paddingTop: 274,
@@ -110,6 +101,7 @@ const styles = StyleSheet.create({
   signUpText: {
     fontFamily: 'Mulish',
     fontSize: 24,
+    fontWeight: '700',
     textAlign: 'center',
   },
 });

@@ -5,8 +5,6 @@ import type {NavigationProps} from '../../App';
 import {ASSETS} from '../utils/assets';
 import {Routes} from '../utils/routes';
 
-// TODO: css fix (like at figma copy)
-
 export const Walkthrough = () => {
   const navigation = useNavigation<NavigationProps>();
 
@@ -16,20 +14,24 @@ export const Walkthrough = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <View>
+      <View>
+        <View style={styles.imagePos}>
           <Image style={styles.startImg} source={ASSETS.walkthroughImage} />
         </View>
-        <Text style={styles.text}>
-          Connect easily with your family and friends over countries
-        </Text>
+        <View style={styles.textPos}>
+          <Text style={styles.text}>
+            Connect easily with your family and friends over countries
+          </Text>
+        </View>
       </View>
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.termsBtn}>
-          <Text style={{fontFamily: 'Mulish'}}>Terms & Privacy Policy</Text>
-        </TouchableOpacity>
+        <View style={styles.termsPos}>
+          <TouchableOpacity style={styles.termsBtn}>
+            <Text style={styles.termsText}>Terms & Privacy Policy</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity style={styles.startBtn} onPress={handleClickNext}>
-          <Text style={{fontFamily: 'Mulish'}}>Start Messaging</Text>
+          <Text style={styles.startText}>Start Messaging</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -40,30 +42,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#fff',
-  },
-  content: {
-    flexGrow: 3,
-    justifyContent: 'center',
   },
   text: {
     color: '#0F1828',
-    fontWeight: 'bold',
-    fontSize: 30,
-    textAlign: 'center',
-    paddingTop: 20,
-    paddingLeft: 10,
-    paddingRight: 10,
+    fontWeight: '700',
+    fontSize: 24,
     fontFamily: 'Mulish',
+    textAlign: 'center',
+  },
+  textPos: {
+    paddingBottom: 42,
+    paddingLeft: 47,
+    paddingRight: 48,
   },
   termsBtn: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 300,
-    height: 50,
-    borderRadius: 30,
-    marginBottom: 10,
+    width: 148,
+    height: 24,
+  },
+  termsPos: {
+    paddingBottom: 18,
   },
   startBtn: {
     alignItems: 'center',
@@ -73,12 +74,26 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: '#91b3fa',
   },
+
   buttons: {
-    flex: 2,
-    paddingBottom: 30,
+    paddingTop: 126,
+    alignItems: 'center',
   },
   startImg: {
-    width: '100%',
-    height: 300,
+    width: 262,
+    height: 271,
+  },
+  imagePos: {
+    paddingTop: 135,
+    paddingLeft: 51,
+    paddingRight: 51,
+  },
+  termsText: {
+    fontFamily: 'Mulish',
+    fontSize: 14,
+  },
+  startText: {
+    fontFamily: 'Mulish',
+    fontSize: 16,
   },
 });

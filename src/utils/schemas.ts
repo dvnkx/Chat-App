@@ -14,7 +14,6 @@ export const profileSchema = Yup.object().shape({
     .min(1, 'Name must be at least 1 characters')
     .max(16, 'Name mustn`t be more than 16 characters')
     .required('Name is a required field'),
-
   surname: Yup.string()
     .min(1, 'Surnema must be at least 1 characters')
     .max(20, 'Surname mustn`t be more than 20 characters '),

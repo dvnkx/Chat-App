@@ -1,8 +1,7 @@
 import {useState, useCallback} from 'react';
 import {View, Text, StyleSheet, Image, Modal, Pressable} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {UIInput} from '../components/UIInput';
-import {ASSETS} from '../utils/assets';
+import {UIInput} from '../Components/UIInput';
 import {Routes} from '../utils/routes';
 import ImagePicker from 'react-native-image-crop-picker';
 import type {NavigationProps} from '../../App';
@@ -10,17 +9,16 @@ import {useNavigation} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import {profileSchema} from '../utils/schemas';
 import {useAppDispatch, useAppSelector} from '../hooks/redux';
-import {setInfo} from '../store/slices/infoSlice';
+import {setInfo} from '../store/slices/userSlice';
 
 export const ProfileAccount = () => {
   const navigation = useNavigation<NavigationProps>();
   const [modalActive, setModalActive] = useState(false);
-  const [avatar, setAvatar] = useState(ASSETS.defaultAvatarImage);
 
   const dispatch = useAppDispatch();
-  const {name, surname, image} = useAppSelector(state => state.data);
+  const {name, surname, image} = useAppSelector(state => state.user);
 
-  const {values, errors, isValid, handleChange} = useFormik({
+  const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
       name: '',
       surname: '',
@@ -28,11 +26,15 @@ export const ProfileAccount = () => {
     validationSchema: profileSchema,
     validateOnChange: true,
     onSubmit: values => {
-      console.log(values);
+      dispatch(
+        setInfo({
+          name: values.name,
+          surname: values.surname,
+        }),
+      );
     },
   });
-
-  const handleClickToConstacts = useCallback(() => {
+  const handleClickToTabs = useCallback(() => {
     navigation.navigate(Routes.TABS);
   }, []);
 
@@ -41,8 +43,9 @@ export const ProfileAccount = () => {
       width: 100,
       height: 100,
       cropping: true,
-    }).then(image => {
-      console.log(image);
+    }).then(img => {
+      dispatch(setInfo(image));
+      console.log(img);
     });
   };
 
@@ -52,25 +55,14 @@ export const ProfileAccount = () => {
       height: 100,
       cropping: true,
     }).then(img => {
-      console.log();
-      setAvatar(img.path);
+      console.log(img);
     });
-  };
-
-  const handleClick = () => {
-    dispatch(
-      setInfo({
-        name: values.name,
-        surname: values.surname,
-      }),
-    );
-    handleClickToConstacts();
   };
 
   return (
     <View style={styles.container}>
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={modalActive}
         onRequestClose={() => {
@@ -96,7 +88,7 @@ export const ProfileAccount = () => {
       </Modal>
       <View style={styles.avatar}>
         <TouchableOpacity onPress={() => setModalActive(true)}>
-          <Image style={styles.avatarImg} source={ASSETS.veniaminovich} />
+          <Image style={styles.avatarImg} source={image} />
         </TouchableOpacity>
       </View>
       <View style={styles.input}>
@@ -117,7 +109,7 @@ export const ProfileAccount = () => {
         <TouchableOpacity
           disabled={!isValid}
           style={styles.saveButton}
-          onPress={handleClick}>
+          onPress={handleClickToTabs}>
           <Text style={styles.btnText}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -161,6 +153,8 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontFamily: 'Mulish',
+    fontWeight: '600',
+    fontSize: 16,
   },
   centeredView: {
     flex: 1,
