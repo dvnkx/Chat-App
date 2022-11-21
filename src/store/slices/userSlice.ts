@@ -7,7 +7,7 @@ export type User = {
   id: null;
   name: null;
   surname?: null;
-  image?: ImageSourcePropType;
+  image?: string;
 };
 
 const initialState: User = {
@@ -15,7 +15,7 @@ const initialState: User = {
   id: null,
   name: null,
   surname: null,
-  image: ASSETS.defaultAvatarImage,
+  image: undefined,
 };
 
 const userSlice = createSlice({

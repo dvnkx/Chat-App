@@ -17,7 +17,7 @@ export const SignIn = () => {
   const handleClickToSignUp = useCallback(() => {
     navigation.navigate(Routes.SIGNUP);
   }, []);
-  const handleClickToContacts = useCallback(() => {
+  const handleClickToTabs = useCallback(() => {
     navigation.navigate(Routes.TABS);
   }, []);
 
@@ -42,6 +42,7 @@ export const SignIn = () => {
           );
         })
         .catch(console.error);
+      handleClickToTabs();
     },
   });
 
@@ -64,19 +65,21 @@ export const SignIn = () => {
           value={values.email}
           onChange={handleChange('email')}
           error={errors.email}
+          autoCorrect={false}
         />
         <UIInput
           placeholder={'Enter your password'}
           value={values.password}
           onChange={handleChange('password')}
           error={errors.password}
+          autoCorrect={false}
         />
       </View>
       <View style={styles.buttons}>
         <View style={styles.signInBtnPos}>
           <TouchableOpacity
             style={styles.signInBtn}
-            onPress={handleSubmit}
+            onPress={handleSubmit as () => void}
             disabled={!isValid}>
             <Text style={styles.signInBtnText}>Sign in</Text>
           </TouchableOpacity>

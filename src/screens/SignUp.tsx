@@ -26,9 +26,7 @@ export const SignUp = () => {
     validateOnChange: true,
     onSubmit: values => {
       createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then(({user}) => {
-          console.log(user);
-        })
+        .then()
         .catch(console.error);
       handleClickToProfile();
     },
@@ -46,18 +44,20 @@ export const SignUp = () => {
           value={values.email}
           onChange={handleChange('email')}
           error={errors.email}
+          autoCorrect={false}
         />
         <UIInput
           placeholder={'Enter your password'}
           value={values.password}
           onChange={handleChange('password')}
           error={errors.password}
+          autoCorrect={false}
         />
       </View>
       <View style={styles.btnPos}>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={handleSubmit}
+          onPress={handleSubmit as () => void}
           disabled={!isValid}>
           <Text style={styles.btnText}>Sign up</Text>
         </TouchableOpacity>

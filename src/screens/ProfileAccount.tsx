@@ -3,20 +3,22 @@ import {View, Text, StyleSheet, Image, Modal, Pressable} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {UIInput} from '../Components/UIInput';
 import {Routes} from '../utils/routes';
-import ImagePicker from 'react-native-image-crop-picker';
 import type {NavigationProps} from '../../App';
 import {useNavigation} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import {profileSchema} from '../utils/schemas';
-import {useAppDispatch, useAppSelector} from '../hooks/redux';
-import {setInfo} from '../store/slices/userSlice';
+import {auth, storage} from '../firebase/firebase';
+import {ref} from '@firebase/storage';
+import {getDownloadURL, uploadString} from 'firebase/storage';
+import {ASSETS} from '../utils/assets';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 export const ProfileAccount = () => {
   const navigation = useNavigation<NavigationProps>();
+  const [imageBase64, setImageBase64] = useState<any>();
   const [modalActive, setModalActive] = useState(false);
 
-  const dispatch = useAppDispatch();
-  const {name, surname, image} = useAppSelector(state => state.user);
+  const avatar = ASSETS.defaultAvatarImage;
 
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
@@ -25,13 +27,39 @@ export const ProfileAccount = () => {
     },
     validationSchema: profileSchema,
     validateOnChange: true,
-    onSubmit: values => {
-      dispatch(
-        setInfo({
-          name: values.name,
-          surname: values.surname,
-        }),
-      );
+    onSubmit: async values => {
+      if (auth.currentUser) {
+        let photoUrl = null;
+        if (imageBase64) {
+          // const storageRef = ref(
+          //   storage,
+          //   `profile-picture/user${auth.currentUser.uid}/${auth.currentUser.uid}`,
+          // );
+
+          // console.log(imageBase64);
+
+          // try {
+          //   await uploadString(storageRef, imageBase64, 'base64');
+          // } catch (e) {
+          //   console.error(`Upload error ${e}`);
+          // }
+
+          // try {
+          //   photoUrl = await getDownloadURL(storageRef);
+          //   console.log(`Downloaded url: ${photoUrl}`);
+          // } catch (e) {
+          //   console.error(`Download error ${e}`);
+          // }
+
+          await auth.updateCurrentUser({
+            ...auth.currentUser,
+            displayName: values.name + ' ' + values.surname,
+            photoURL: imageBase64,
+            email: auth.currentUser.email,
+          });
+        }
+        handleClickToTabs();
+      }
     },
   });
   const handleClickToTabs = useCallback(() => {
@@ -39,23 +67,30 @@ export const ProfileAccount = () => {
   }, []);
 
   const takePhotoFromCamera = () => {
-    ImagePicker.openCamera({
-      width: 100,
-      height: 100,
-      cropping: true,
-    }).then(img => {
-      dispatch(setInfo(image));
-      console.log(img);
+    launchCamera({
+      mediaType: 'photo',
+      maxHeight: 100,
+      maxWidth: 100,
+      includeBase64: true,
+      cameraType: 'front',
+      quality: 0.8,
     });
   };
 
   const takePhotoFromGallery = () => {
-    ImagePicker.openPicker({
-      width: 100,
-      height: 100,
-      cropping: true,
-    }).then(img => {
-      console.log(img);
+    launchImageLibrary({
+      mediaType: 'photo',
+      maxHeight: 100,
+      maxWidth: 100,
+      includeBase64: true,
+      quality: 0.8,
+      selectionLimit: 1,
+    }).then(image => {
+      image
+        .assets!.map(arr => arr.base64)
+        .forEach(function (data) {
+          setImageBase64(data);
+        });
     });
   };
 
@@ -86,10 +121,33 @@ export const ProfileAccount = () => {
           </View>
         </View>
       </Modal>
-      <View style={styles.avatar}>
-        <TouchableOpacity onPress={() => setModalActive(true)}>
-          <Image style={styles.avatarImg} source={image} />
-        </TouchableOpacity>
+      <View style={styles.header}>
+        <View style={styles.headerPos}>
+          <TouchableOpacity style={styles.backBtn} onPress={handleClickToTabs}>
+            <View style={styles.chevronPos}>
+              <Image style={styles.chevron} source={ASSETS.chevronLeft} />
+            </View>
+            <Text style={styles.backText}>Your profile</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.avatarPos}>
+        <View style={styles.avatar}>
+          <TouchableOpacity onPress={() => setModalActive(true)}>
+            <Image
+              style={
+                ASSETS.defaultAvatarImage && imageBase64
+                  ? styles.avatarImg
+                  : styles.defaultAvatarImg
+              }
+              source={
+                imageBase64
+                  ? {uri: `data:image/jpeg;base64,${imageBase64}`}
+                  : avatar
+              }
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.input}>
         <UIInput
@@ -97,20 +155,22 @@ export const ProfileAccount = () => {
           value={values.name}
           onChange={handleChange('name')}
           error={errors.name}
+          autoCorrect={false}
         />
         <UIInput
           placeholder="Enter your name (Optional)"
           value={values.surname}
           onChange={handleChange('surname')}
           error={errors.surname}
+          autoCorrect={false}
         />
       </View>
       <View style={styles.btnPos}>
         <TouchableOpacity
           disabled={!isValid}
           style={styles.saveButton}
-          onPress={handleClickToTabs}>
-          <Text style={styles.btnText}>Save</Text>
+          onPress={handleSubmit as () => void}>
+          <Text style={styles.btnText}>Save </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -122,20 +182,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingTop: 136,
   },
   avatar: {
-    paddingLeft: 25,
-    justifyContent: 'center',
-    alignContent: 'center',
     borderRadius: 50,
     backgroundColor: '#F0F0F0',
     width: 100,
     height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarImg: {
-    width: 56,
-    height: 56,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  avatarPos: {
+    paddingTop: 46,
+  },
+  defaultAvatarImg: {
+    width: 70,
+    height: 70,
+    alignItems: 'center',
   },
   input: {
     paddingTop: 31,
@@ -175,5 +242,36 @@ const styles = StyleSheet.create({
     margin: 10,
     elevation: 2,
     backgroundColor: '#91b3fa',
+  },
+  header: {
+    width: '100%',
+    height: 90,
+    paddingTop: 47,
+    paddingBottom: 13,
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  headerPos: {
+    width: 343,
+    height: 30,
+  },
+  chevron: {
+    width: 20,
+    height: 20,
+  },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backText: {
+    fontFamily: 'Mulish',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  chevronPos: {
+    paddingTop: 5.99,
+    paddingBottom: 5.99,
+    paddingLeft: 8.29,
+    paddingRight: 8.29,
   },
 });

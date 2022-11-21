@@ -14,6 +14,7 @@ import './src/firebase/firebase';
 import {ShavronLeft} from './src/Components/ChavronLeft';
 import {ProfileAccount} from './src/screens/ProfileAccount';
 import {Tabs} from './src/screens/Tabs';
+import {Chat} from './src/screens/UIChat';
 
 type RootStackParamList = {
   Walkthrough: {name: string};
@@ -24,6 +25,7 @@ type RootStackParamList = {
   Options: {name: string} | undefined;
   Chats: {name: string} | undefined;
   Tabs: {name?: string} | undefined;
+  Chat: {name?: string} | undefined;
 };
 
 export type NavigationProps = StackNavigationProp<RootStackParamList>;
@@ -67,20 +69,19 @@ const App = () => {
             name="ProfileAccount"
             component={ProfileAccount}
             options={{
-              headerBackTitle: 'Your Profile',
-              headerBackTitleStyle: {
-                fontFamily: 'Mulish',
-                fontSize: 18,
-                color: '#0F1829',
-              },
-              headerTitle: '',
-              headerShadowVisible: false,
-              headerBackImage: () => <ShavronLeft />,
+              headerShown: false,
             }}
           />
           <RootStack.Screen
             name="Tabs"
             component={Tabs}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <RootStack.Screen
+            name="Chat"
+            component={Chat}
             options={{
               headerShown: false,
             }}

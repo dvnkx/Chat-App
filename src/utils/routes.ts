@@ -7,4 +7,6 @@ export enum Routes {
   CHATS = 'Chats',
   OPTIONS = 'Options',
   TABS = 'Tabs',
+  CHAT = 'Chat',
+  MORE = 'More',
 }

@@ -2,8 +2,7 @@ import {ASSETS} from '../utils/assets';
 import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Image} from 'react-native';
-import {UIInput} from '../Components/UIInput';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView, TextInput} from 'react-native-gesture-handler';
 
 export const Contacts = () => {
   return (
@@ -15,19 +14,28 @@ export const Contacts = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <View>
-          <Text>Here wil be an input</Text>
+        <View style={styles.input}>
+          <TextInput style={styles.textInput} placeholder="Search" />
+          <View style={styles.iconPos}>
+            <Image style={styles.inputIcon} source={ASSETS.search} />
+          </View>
         </View>
-        <ScrollView>
+        <ScrollView style={styles.scroll}>
           <View style={styles.user}>
             <Image style={styles.avatar} source={ASSETS.women1} />
+            <View style={styles.statusPos}>
+              <View style={styles.status}></View>
+            </View>
             <View style={styles.userData}>
-              <Text style={styles.userName}> Natasha</Text>
+              <Text style={styles.userName}>Natalia</Text>
               <Text style={styles.userStatus}>Online</Text>
             </View>
           </View>
           <View style={styles.user}>
             <Image style={styles.avatar} source={ASSETS.male} />
+            <View style={styles.statusPos}>
+              <View style={styles.status}></View>
+            </View>
             <View style={styles.userData}>
               <Text style={styles.userName}>Hipstes</Text>
               <Text style={styles.userStatus}>Online</Text>
@@ -49,6 +57,9 @@ export const Contacts = () => {
           </View>
           <View style={styles.user}>
             <Image style={styles.avatar} source={ASSETS.avatar} />
+            <View style={styles.statusPos}>
+              <View style={styles.status}></View>
+            </View>
             <View style={styles.userData}>
               <Text style={styles.userName}>Unknown</Text>
               <Text style={styles.userStatus}>Online</Text>
@@ -88,8 +99,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   headerBtn: {
-    width: 20,
-    height: 20,
+    width: 14,
+    height: 14,
   },
   content: {
     paddingTop: 16,
@@ -97,6 +108,9 @@ const styles = StyleSheet.create({
     paddingRight: 24,
     paddingLeft: 24,
     backgroundColor: '#fff',
+  },
+  scroll: {
+    paddingTop: 16,
   },
   user: {
     flexDirection: 'row',
@@ -124,5 +138,39 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     width: 259,
     height: 56,
+  },
+  textInput: {
+    width: 327,
+    height: 36,
+    borderRadius: 5,
+    backgroundColor: '#F0F0F0',
+    paddingLeft: 32,
+    fontFamily: 'Mulish',
+  },
+  input: {
+    justifyContent: 'center',
+  },
+  inputIcon: {
+    width: 16,
+    height: 16,
+    opacity: 0.3,
+  },
+  iconPos: {
+    position: 'absolute',
+    paddingLeft: 8,
+  },
+  status: {
+    backgroundColor: '#2CC069',
+    width: 14,
+    height: 14,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  statusPos: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 40,
   },
 });

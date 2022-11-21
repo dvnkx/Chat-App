@@ -12,6 +12,7 @@ interface IInputProps {
   value: string;
   onChange: (text: string) => void;
   error?: string;
+  autoCorrect?: boolean;
 }
 
 export const UIInput: React.FC<IInputProps> = props => {
@@ -25,6 +26,7 @@ export const UIInput: React.FC<IInputProps> = props => {
         style={
           props.error && props.value ? styles.notValidInput : styles.validInput
         }
+        autoCorrect={props.autoCorrect}
       />
       <View>
         {props.error ? (
