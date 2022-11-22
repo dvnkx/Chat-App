@@ -1,6 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {ImageSourcePropType} from 'react-native';
-import {ASSETS} from '../../utils/assets';
 
 export type User = {
   email: null;

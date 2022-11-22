@@ -3,7 +3,6 @@ import {Chats} from './Chats';
 import {Contacts} from './Contacts';
 import {More} from './More';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Routes} from '../utils/routes';
 
 const Tab = createBottomTabNavigator();
 

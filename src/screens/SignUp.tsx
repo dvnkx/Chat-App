@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {UIInput} from '../Components/UIInput';
 import {Routes} from '../utils/routes';
@@ -24,11 +24,15 @@ export const SignUp = () => {
     },
     validationSchema: authSchema,
     validateOnChange: true,
-    onSubmit: values => {
-      createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then()
-        .catch(console.error);
-      handleClickToProfile();
+    onSubmit: async values => {
+      await createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then(handleClickToProfile)
+        .catch(function (error) {
+          const errorCode = error.code;
+          if (errorCode == 'auth/email-already-in-use') {
+            Alert.alert('Email already in use');
+          }
+        });
     },
   });
 

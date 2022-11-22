@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
 import {UIInput} from '../Components/UIInput';
 import {useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -8,8 +8,6 @@ import {Routes} from '../utils/routes';
 import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {signInWithEmailAndPassword} from 'firebase/auth';
-import {useAppDispatch} from '../hooks/redux';
-import {setUser} from '../store/slices/userSlice';
 import {auth} from '../firebase/firebase';
 
 export const SignIn = () => {
@@ -21,8 +19,6 @@ export const SignIn = () => {
     navigation.navigate(Routes.TABS);
   }, []);
 
-  const dispatch = useAppDispatch();
-
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
       email: '',
@@ -30,19 +26,15 @@ export const SignIn = () => {
     },
     validationSchema: authSchema,
     validateOnChange: true,
-    onSubmit: values => {
-      signInWithEmailAndPassword(auth, values.email, values.password)
-        .then(({user}) => {
-          console.log(user.email);
-          dispatch(
-            setUser({
-              emai: user.email,
-              id: user.uid,
-            }),
-          );
-        })
-        .catch(console.error);
-      handleClickToTabs();
+    onSubmit: async values => {
+      await signInWithEmailAndPassword(auth, values.email, values.password)
+        .then(handleClickToTabs)
+        .catch(function (error) {
+          const errorCode = error.code;
+          if (errorCode === 'auth/user-not-found') {
+            Alert.alert('Wrong email or password');
+          }
+        });
     },
   });
 

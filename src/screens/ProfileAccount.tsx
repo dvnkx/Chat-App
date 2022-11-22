@@ -14,9 +14,13 @@ import {ASSETS} from '../utils/assets';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 export const ProfileAccount = () => {
-  const navigation = useNavigation<NavigationProps>();
   const [imageBase64, setImageBase64] = useState<any>();
   const [modalActive, setModalActive] = useState(false);
+
+  const navigation = useNavigation<NavigationProps>();
+  const handleClickToTabs = useCallback(() => {
+    navigation.navigate(Routes.TABS);
+  }, []);
 
   const avatar = ASSETS.defaultAvatarImage;
 
@@ -58,13 +62,11 @@ export const ProfileAccount = () => {
             email: auth.currentUser.email,
           });
         }
+        console.log('Name: ', auth.currentUser!.displayName);
         handleClickToTabs();
       }
     },
   });
-  const handleClickToTabs = useCallback(() => {
-    navigation.navigate(Routes.TABS);
-  }, []);
 
   const takePhotoFromCamera = () => {
     launchCamera({
@@ -86,23 +88,13 @@ export const ProfileAccount = () => {
       quality: 0.8,
       selectionLimit: 1,
     }).then(image => {
-      image
-        .assets!.map(arr => arr.base64)
-        .forEach(function (data) {
-          setImageBase64(data);
-        });
+      console.log(image.assets![0]);
     });
   };
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalActive}
-        onRequestClose={() => {
-          setModalActive(!modalActive);
-        }}>
+      <Modal animationType="slide" transparent={true} visible={modalActive}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Pressable style={styles.modalButton} onPress={takePhotoFromCamera}>
@@ -242,6 +234,8 @@ const styles = StyleSheet.create({
     margin: 10,
     elevation: 2,
     backgroundColor: '#91b3fa',
+    width: 120,
+    alignItems: 'center',
   },
   header: {
     width: '100%',

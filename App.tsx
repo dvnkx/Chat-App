@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   createStackNavigator,
   StackNavigationProp,
@@ -14,15 +14,17 @@ import './src/firebase/firebase';
 import {ShavronLeft} from './src/Components/ChavronLeft';
 import {ProfileAccount} from './src/screens/ProfileAccount';
 import {Tabs} from './src/screens/Tabs';
-import {Chat} from './src/screens/UIChat';
+import {Chat} from './src/screens/Chat';
+import {onAuthStateChanged} from 'firebase/auth';
+import {auth} from './src/firebase/firebase';
 
 type RootStackParamList = {
-  Walkthrough: {name: string};
+  Walkthrough: {name: string} | undefined;
   SignIn: {name: string} | undefined;
   SignUp: {name: string} | undefined;
   Contacts: {name: string} | undefined;
   ProfileAccount: {name: string} | undefined;
-  Options: {name: string} | undefined;
+  More: {name: string} | undefined;
   Chats: {name: string} | undefined;
   Tabs: {name?: string} | undefined;
   Chat: {name?: string} | undefined;
@@ -36,6 +38,18 @@ const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   const store = setStore();
+
+  const [authState, setAuthState] = useState<boolean>(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, data => {
+      if (data) {
+        setAuthState(true);
+      } else {
+        setAuthState(false);
+      }
+    });
+  }, []);
 
   const authSettings = {
     headerBackTitleVisible: false,
@@ -65,27 +79,33 @@ const App = () => {
             component={SignUp}
             options={authSettings}
           />
-          <RootStack.Screen
-            name="ProfileAccount"
-            component={ProfileAccount}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <RootStack.Screen
-            name="Tabs"
-            component={Tabs}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <RootStack.Screen
-            name="Chat"
-            component={Chat}
-            options={{
-              headerShown: false,
-            }}
-          />
+          {authState ? (
+            <RootStack.Screen
+              name="ProfileAccount"
+              component={ProfileAccount}
+              options={{
+                headerShown: false,
+              }}
+            />
+          ) : null}
+          {authState ? (
+            <RootStack.Screen
+              name="Tabs"
+              component={Tabs}
+              options={{
+                headerShown: false,
+              }}
+            />
+          ) : null}
+          {authState ? (
+            <RootStack.Screen
+              name="Chat"
+              component={Chat}
+              options={{
+                headerShown: false,
+              }}
+            />
+          ) : null}
         </RootStack.Navigator>
       </Provider>
     </NavigationContainer>

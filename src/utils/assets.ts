@@ -23,4 +23,5 @@ export const ASSETS = {
   president: require('../pictures/The-PRESIDENT.jpg'),
   blob: require('../pictures/blob.webp'),
   send: require('../pictures/send.png'),
+  signOut: require('../pictures/sign-out.png'),
 };

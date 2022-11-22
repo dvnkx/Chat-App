@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, Alert} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ASSETS} from '../utils/assets';
 import type {NavigationProps} from '../../App';
@@ -6,6 +6,7 @@ import {Routes} from '../utils/routes';
 import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import {auth} from '../firebase/firebase';
+import {UIOptions} from '../Components/UIOptions';
 
 export const More = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -20,6 +21,19 @@ export const More = () => {
 
   const handleClickToChats = useCallback(() => {
     navigation.navigate(Routes.CHATS);
+  }, []);
+
+  const handleClickToSignOut = useCallback(() => {
+    navigation.navigate(Routes.WALKTHROUGH);
+  }, []);
+
+  const signOut = useCallback(() => {
+    auth
+      .signOut()
+      .then(handleClickToSignOut)
+      .catch(e => {
+        Alert.alert(e);
+      });
   }, []);
 
   return (
@@ -54,121 +68,34 @@ export const More = () => {
           </View>
         </View>
         <View style={styles.tabsContent}>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity
-              style={styles.tabsButton}
-              onPress={handleClickToContacts}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.defaultAvatarImage} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Account</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity
-              style={styles.tabsButton}
-              onPress={handleClickToChats}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.chats} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Chats</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <UIOptions
+            navigate={handleClickToContacts}
+            icon={ASSETS.avatar}
+            text={'Account'}
+          />
+          <UIOptions
+            navigate={handleClickToChats}
+            icon={ASSETS.chats}
+            text={'Chats'}
+          />
         </View>
         <View style={styles.optionsContent}>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.appereance} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Appereance</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.notifications} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Notifications</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.privacy} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Privacy</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.data} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Data Usage</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <UIOptions icon={ASSETS.appereance} text={'Appearence'} />
+          <UIOptions icon={ASSETS.notifications} text={'Notifications'} />
+          <UIOptions icon={ASSETS.privacy} text={'Privacy'} />
+          <UIOptions icon={ASSETS.data} text={'Data Usage'} />
         </View>
         <View style={styles.borderPos}>
           <View style={styles.border}></View>
         </View>
         <View style={styles.tabsContent}>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.help} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Help</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.tabsPos}>
-            <TouchableOpacity style={styles.tabsButton}>
-              <View style={styles.iconPos}>
-                <Image style={styles.icon} source={ASSETS.message} />
-              </View>
-              <View style={styles.textPos}>
-                <Text style={styles.text}>Invite your friends</Text>
-              </View>
-              <View style={styles.chevronPos}>
-                <Image style={styles.chevron} source={ASSETS.chevronRight} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <UIOptions icon={ASSETS.help} text={'Help'} />
+          <UIOptions icon={ASSETS.message} text={'Invite your friends'} />
+          <UIOptions
+            icon={ASSETS.signOut}
+            text={'Sign Out'}
+            navigate={signOut}
+          />
         </View>
       </View>
     </View>
@@ -246,27 +173,6 @@ const styles = StyleSheet.create({
   tabsContent: {
     width: 375,
     height: 104,
-  },
-  tabsPos: {
-    paddingTop: 8,
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  tabsButton: {
-    width: 343,
-    height: 40,
-    flexDirection: 'row',
-  },
-  icon: {
-    width: 17,
-    height: 17,
-  },
-  iconPos: {
-    justifyContent: 'center',
-  },
-  textPos: {
-    paddingLeft: 6,
-    justifyContent: 'center',
   },
   chevronPos: {
     position: 'absolute',
