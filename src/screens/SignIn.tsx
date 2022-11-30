@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
-import {UIInput} from '../Components/UIInput';
+import {UIInput} from '../сomponents/UIInput';
 import {useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProps} from '../../App';
@@ -9,7 +9,7 @@ import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
-import {uploadTStatusToServer} from '../Components/uploadData';
+import {uploadTStatusToServer} from '../services/userManagement';
 
 export const SignIn = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -60,14 +60,14 @@ export const SignIn = () => {
           placeholder={'Enter your email'}
           keyboardType={'email-address'}
           value={values.email}
-          onChange={handleChange('email')}
+          onChangeText={handleChange('email')}
           error={errors.email}
           autoCorrect={false}
         />
         <UIInput
           placeholder={'Enter your password'}
           value={values.password}
-          onChange={handleChange('password')}
+          onChangeText={handleChange('password')}
           error={errors.password}
           autoCorrect={false}
         />

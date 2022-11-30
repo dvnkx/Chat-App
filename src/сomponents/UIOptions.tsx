@@ -4,27 +4,26 @@ import {ASSETS} from '../utils/assets';
 
 interface IOptionsProps {
   navigate?: () => void;
+  //TODO: fix any type
   icon: any;
   text: string;
 }
 
-export const UIOptions: React.FC<IOptionsProps> = props => {
-  return (
-    <View style={styles.tabsPos}>
-      <TouchableOpacity style={styles.tabsButton} onPress={props.navigate}>
-        <View style={styles.iconPos}>
-          <Image style={styles.icon} source={props.icon} />
-        </View>
-        <View style={styles.textPos}>
-          <Text style={styles.text}>{props.text}</Text>
-        </View>
-        <View style={styles.chevronPos}>
-          <Image style={styles.chevron} source={ASSETS.chevronRight} />
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-};
+export const UIOptions: React.FC<IOptionsProps> = ({navigate, icon, text}) => (
+  <View style={styles.tabsPos}>
+    <TouchableOpacity style={styles.tabsButton} onPress={navigate}>
+      <View style={styles.iconPos}>
+        <Image style={styles.icon} source={icon} />
+      </View>
+      <View style={styles.textPos}>
+        <Text style={styles.text}>{text}</Text>
+      </View>
+      <View style={styles.chevronPos}>
+        <Image style={styles.chevron} source={ASSETS.chevronRight} />
+      </View>
+    </TouchableOpacity>
+  </View>
+);
 
 const styles = StyleSheet.create({
   tabsButton: {

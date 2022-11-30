@@ -628,8 +628,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 7e2e1772ef7b97168c880eeaf3749d8c145ffd6e
   React-jsinspector: 0553c9fe7218e1f127be070bd5a4d2fc19fb8190
   React-logger: cffcc09e8aba8a3014be8d18da7f922802e9f19e
-  react-native-image-picker: f2ab1215d17bcfe27b0eb6417cc236fd1f4775e7
-  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-image-picker: b54c9dac5683d6f98da915cdba2ad17019de2faf
+  react-native-safe-area-context: ec0d85aca8110dae9327430a9541fec165352dab
   React-perflogger: 082b4293f0b3914ff41da35a6c06ac4490fcbcc8
   React-RCTActionSheet: 83da3030deb5dea54b398129f56540a44e64d3ae
   React-RCTAnimation: bac3a4f4c0436554d9f7fbb1352a0cdcb1fb0f1c
@@ -642,9 +642,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: b9a58ffdd18446f43d493a4b0ecd603ee86be847
   React-runtimeexecutor: e9b1f9310158a1e265bcdfdfd8c62d6174b947a2
   ReactCommon: 01064177e66d652192c661de899b1076da962fd9
-  RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
+  RNCMaskedView: f127cd9652acfa31b91dcff613e07ba18b774db6
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 199701d82772a6e17721d0b6cf6d8875f0e6caf0
+  RNReanimated: 9d9ca74e6b5a430baa20fe0ad29d73c3d4bf22c8
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSVG: 38ca962c970dbce1ca38991a5aebf26d163f9efb
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608

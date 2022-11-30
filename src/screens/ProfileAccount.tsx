@@ -1,28 +1,29 @@
 import {useState, useCallback} from 'react';
 import {View, Text, StyleSheet, Image, Modal, Pressable} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {UIInput} from '../Components/UIInput';
+import {UIInput} from '../сomponents/UIInput';
 import {Routes} from '../utils/routes';
 import type {NavigationProps} from '../../App';
 import {useNavigation} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import {profileSchema} from '../utils/schemas';
-import {auth, storage} from '../firebase/firebase';
-import {ref} from '@firebase/storage';
-import {getDownloadURL, uploadString} from 'firebase/storage';
+import {auth} from '../firebase/firebase';
 import {ASSETS} from '../utils/assets';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {uploadProfileDataToServer} from '../Components/uploadData';
+import {uploadProfileDataToServer} from '../services/userManagement';
 import {updateProfile, User} from 'firebase/auth';
+import {LoadingOverlay} from '../сomponents/LoadingOverlay';
+import {first} from 'lodash';
 
 export const ProfileAccount = () => {
   const [imageBase64, setImageBase64] = useState<any>();
   const [modalActive, setModalActive] = useState(false);
+  const [isDataUploading, setIsDataUploading] = useState<boolean>(false);
 
   const navigation = useNavigation<NavigationProps>();
   const handleClickToTabs = useCallback(() => {
     navigation.navigate(Routes.TABS);
-  }, []);
+  }, [navigation]);
 
   const avatar = ASSETS.defaultAvatarImage;
 
@@ -33,7 +34,7 @@ export const ProfileAccount = () => {
     },
     validationSchema: profileSchema,
     validateOnChange: true,
-    onSubmit: async values => {
+    onSubmit: async submittedValues => {
       // let photoUrl = null;
       // if (imageBase64) {
       // const storageRef = ref(
@@ -57,57 +58,69 @@ export const ProfileAccount = () => {
       // }
       // }
 
-      await updateProfile(auth.currentUser as User, {
-        displayName: values.name + ' ' + values.surname,
-        photoURL: imageBase64,
-      })
-        .then(() => {
-          console.log(
-            `Profile updated. Name: ${auth.currentUser!.displayName}`,
-          );
-        })
-        .catch(e => console.log(e));
-      await uploadProfileDataToServer();
-      handleClickToTabs();
+      try {
+        setIsDataUploading(true);
+        await updateProfile(auth.currentUser as User, {
+          displayName: submittedValues.name + ' ' + submittedValues.surname,
+          // photoURL: imageBase64,
+        });
+        console.log(`Profile updated. Name: ${auth.currentUser!.displayName}`);
+
+        await uploadProfileDataToServer();
+        setIsDataUploading(false);
+
+        handleClickToTabs();
+      } catch (e) {
+        console.error(e);
+        setIsDataUploading(false);
+        //TODO show error toast and ask user to try again
+        //https://github.com/calintamas/react-native-toast-message/blob/HEAD/docs/quick-start.md
+      }
+
       // await uploadName();
     },
   });
 
-  const takePhotoFromCamera = () => {
-    launchCamera({
+  const takePhotoFromCamera = async () => {
+    const image = await launchCamera({
       mediaType: 'photo',
       maxHeight: 100,
       maxWidth: 100,
       includeBase64: true,
       quality: 0.8,
-    }).then(image => {
-      image
-        .assets!.map(arr => arr.base64)
-        .forEach(function (data) {
-          setImageBase64(data);
-        });
     });
+
+    const firstImage = first(image.assets);
+
+    if (firstImage) {
+      setImageBase64(firstImage.base64);
+    }
   };
 
-  const takePhotoFromGallery = () => {
-    launchImageLibrary({
+  const takePhotoFromGallery = async () => {
+    const image = await launchImageLibrary({
       mediaType: 'photo',
       maxHeight: 100,
       maxWidth: 100,
       includeBase64: true,
       quality: 0.8,
       selectionLimit: 1,
-    }).then(image => {
-      image
-        .assets!.map(arr => arr.base64)
-        .forEach(function (data) {
-          setImageBase64(data);
-        });
     });
+
+    const firstImage = first(image.assets);
+
+    if (firstImage) {
+      setImageBase64(firstImage.base64);
+    }
   };
+
+  const onToggleModal = useCallback(() => {
+    setModalActive(prev => !prev);
+  }, []);
 
   return (
     <View style={styles.container}>
+      {isDataUploading && <LoadingOverlay />}
       <Modal animationType="slide" transparent={true} visible={modalActive}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -119,9 +132,7 @@ export const ProfileAccount = () => {
               onPress={takePhotoFromGallery}>
               <Text>Choose photo</Text>
             </Pressable>
-            <Pressable
-              style={styles.modalButton}
-              onPress={() => setModalActive(!modalActive)}>
+            <Pressable style={styles.modalButton} onPress={onToggleModal}>
               <Text>Hide Modal</Text>
             </Pressable>
           </View>
@@ -142,7 +153,7 @@ export const ProfileAccount = () => {
       </View>
       <View style={styles.avatarPos}>
         <View style={styles.avatar}>
-          <TouchableOpacity onPress={() => setModalActive(true)}>
+          <TouchableOpacity onPress={onToggleModal}>
             <Image
               style={
                 ASSETS.defaultAvatarImage && imageBase64
@@ -162,16 +173,14 @@ export const ProfileAccount = () => {
         <UIInput
           placeholder="Enter your name (Required)"
           value={values.name}
-          onChange={handleChange('name')}
+          onChangeText={handleChange('name')}
           error={errors.name}
-          autoCorrect={false}
         />
         <UIInput
-          placeholder="Enter your name (Optional)"
+          placeholder="Enter your surname (Optional)"
           value={values.surname}
-          onChange={handleChange('surname')}
+          onChangeText={handleChange('surname')}
           error={errors.surname}
-          autoCorrect={false}
         />
       </View>
       <View style={styles.btnPos}>

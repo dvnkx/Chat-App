@@ -6,14 +6,14 @@ import {Routes} from '../utils/routes';
 import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import {auth} from '../firebase/firebase';
-import {UIOptions} from '../Components/UIOptions';
-import {uploadFStatusToServer} from '../Components/uploadData';
+import {UIOptions} from '../сomponents/UIOptions';
+import {uploadFStatusToServer} from '../services/userManagement';
 
 export const More = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickToProfile = useCallback(() => {
-    navigation.navigate(Routes.PROFILEACCOUNT);
+    navigation.navigate(Routes.PROFILE_ACCOUNT);
   }, []);
 
   const handleClickToContacts = useCallback(() => {
@@ -82,7 +82,7 @@ export const More = () => {
           <UIOptions icon={ASSETS.data} text={'Data Usage'} />
         </View>
         <View style={styles.borderPos}>
-          <View style={styles.border}></View>
+          <View style={styles.border} />
         </View>
         <View style={styles.tabsContent}>
           <UIOptions icon={ASSETS.help} text={'Help'} />

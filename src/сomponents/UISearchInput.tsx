@@ -16,23 +16,27 @@ interface ISearchInput {
   autoCorrect?: boolean;
 }
 
-export const UISearchInput: React.FC<ISearchInput> = props => {
-  return (
-    <View style={styles.input}>
-      <TextInput
-        placeholder={props.placeholder}
-        keyboardType={props.keyboardType}
-        value={props.value}
-        onChangeText={props.onChange}
-        style={styles.inputStyle}
-        autoCorrect={props.autoCorrect}
-      />
-      <View style={styles.iconPos}>
-        <Image style={styles.inputIcon} source={ASSETS.search} />
-      </View>
+export const UISearchInput: React.FC<ISearchInput> = ({
+  placeholder,
+  keyboardType,
+  value,
+  onChange,
+  autoCorrect,
+}) => (
+  <View style={styles.input}>
+    <TextInput
+      placeholder={placeholder}
+      keyboardType={keyboardType}
+      value={value}
+      onChangeText={onChange}
+      style={styles.inputStyle}
+      autoCorrect={autoCorrect}
+    />
+    <View style={styles.iconPos}>
+      <Image style={styles.inputIcon} source={ASSETS.search} />
     </View>
-  );
-};
+  </View>
+);
 
 const styles = StyleSheet.create({
   input: {

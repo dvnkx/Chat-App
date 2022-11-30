@@ -18,9 +18,3 @@ export const profileSchema = Yup.object().shape({
     .min(1, 'Surnema must be at least 1 characters')
     .max(20, 'Surname mustn`t be more than 20 characters '),
 });
-
-export const searchSchema = Yup.object().shape({
-  email: Yup.string()
-    .required('Email is a required field')
-    .email('Invalid email format'),
-});

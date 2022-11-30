@@ -3,14 +3,16 @@ import {Alert, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Image} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {UIContacts} from '../Components/UIContacts';
+import {UIContacts} from '../сomponents/UIContacts';
 import {collection, DocumentData, getDocs} from 'firebase/firestore';
-import {UISearchInput} from '../Components/UISearchInput';
+import {UISearchInput} from '../сomponents/UISearchInput';
 import {useEffect, useMemo, useState} from 'react';
 import debounce from 'lodash.debounce';
 import {auth, db} from '../firebase/firebase';
+import {useNavigation} from '@react-navigation/native';
 
 export const Contacts = () => {
+  const navigation = useNavigation();
   const [search, setSearch] = useState('');
   const [contacts, setContacts] = useState<DocumentData[]>([]);
 
@@ -51,7 +53,10 @@ export const Contacts = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Contacts</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('kek');
+          }}>
           <Image style={styles.headerBtn} source={ASSETS.plus} />
         </TouchableOpacity>
       </View>

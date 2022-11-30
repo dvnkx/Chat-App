@@ -11,16 +11,19 @@ import {SignUp} from './src/screens/SignUp';
 import {Provider} from 'react-redux';
 import {setStore} from './src/store/store';
 import './src/firebase/firebase';
-import {ShavronLeft} from './src/Components/ChavronLeft';
+import {ShavronLeft} from './src/сomponents/ChavronLeft';
 import {ProfileAccount} from './src/screens/ProfileAccount';
 import {Tabs} from './src/screens/Tabs';
 import {Chat} from './src/screens/Chat';
 import {onAuthStateChanged} from 'firebase/auth';
 import {auth} from './src/firebase/firebase';
 import {
-  uploadFStatusToServer,
   uploadTStatusToServer,
-} from './src/Components/uploadData';
+  uploadUserOnlineStatus,
+} from './src/services/userManagement';
+import {setUser, userSlice} from './src/store/slices/userSlice';
+import {Routes} from './src/utils/routes';
+import {View} from 'react-native';
 
 type RootStackParamList = {
   Walkthrough: {name: string} | undefined;
@@ -46,15 +49,28 @@ const App = () => {
   const [authState, setAuthState] = useState<boolean>(false);
 
   useEffect(() => {
-    onAuthStateChanged(auth, data => {
-      if (data) {
+    onAuthStateChanged(auth, userData => {
+      if (userData) {
+        store.dispatch(
+          userSlice.actions.setUser({
+            id: userData.uid,
+            email: userData.email,
+          }),
+        );
         setAuthState(true);
-        uploadTStatusToServer();
+        uploadUserOnlineStatus(userData.uid, true);
       } else {
+        const prevUserUid = store.getState().user.id;
+        store.dispatch(userSlice.actions.logOut());
+        if (prevUserUid) {
+          uploadUserOnlineStatus(prevUserUid, false);
+        } else {
+          console.error('Impossible to set user status offline');
+        }
         setAuthState(false);
       }
     });
-  }, []);
+  }, []); //eslint-disable-line
 
   const authSettings = {
     headerBackTitleVisible: false,
@@ -68,49 +84,61 @@ const App = () => {
       <Provider store={store}>
         <RootStack.Navigator>
           <RootStack.Screen
-            name="Walkthrough"
+            name={Routes.WALKTHROUGH}
             component={Walkthrough}
             options={{
               headerShown: false,
             }}
           />
           <RootStack.Screen
-            name="SignIn"
+            name={Routes.SIGN_IN}
             component={SignIn}
             options={authSettings}
           />
           <RootStack.Screen
+            // TODO: replace with Routes
             name="SignUp"
             component={SignUp}
             options={authSettings}
           />
-          {authState ? (
-            <RootStack.Screen
-              name="ProfileAccount"
-              component={ProfileAccount}
-              options={{
-                headerShown: false,
-              }}
-            />
-          ) : null}
-          {authState ? (
-            <RootStack.Screen
-              name="Tabs"
-              component={Tabs}
-              options={{
-                headerShown: false,
-              }}
-            />
-          ) : null}
-          {authState ? (
-            <RootStack.Screen
-              name="Chat"
-              component={Chat}
-              options={{
-                headerShown: false,
-              }}
-            />
-          ) : null}
+          {authState && (
+            <RootStack.Group>
+              <RootStack.Screen
+                // TODO: replace with Routes
+                name="ProfileAccount"
+                component={ProfileAccount}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <RootStack.Screen
+                // TODO: replace with Routes
+                name="Tabs"
+                component={Tabs}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <RootStack.Screen
+                // TODO: replace with Routes
+                name="Chat"
+                component={Chat}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <RootStack.Screen
+                name="kek"
+                component={() => <View style={{backgroundColor: 'red'}} />}
+                options={{
+                  presentation: 'modal',
+                  cardStyle: {
+                    marginTop: 75,
+                  },
+                }}
+              />
+            </RootStack.Group>
+          )}
         </RootStack.Navigator>
       </Provider>
     </NavigationContainer>

@@ -9,7 +9,7 @@ export const Walkthrough = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickNext = useCallback(() => {
-    navigation.navigate(Routes.SIGNIN);
+    navigation.navigate(Routes.SIGN_IN);
   }, []);
 
   return (
