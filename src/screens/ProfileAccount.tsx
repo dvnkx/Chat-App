@@ -12,6 +12,8 @@ import {ref} from '@firebase/storage';
 import {getDownloadURL, uploadString} from 'firebase/storage';
 import {ASSETS} from '../utils/assets';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {uploadProfileDataToServer} from '../Components/uploadData';
+import {updateProfile, User} from 'firebase/auth';
 
 export const ProfileAccount = () => {
   const [imageBase64, setImageBase64] = useState<any>();
@@ -32,39 +34,42 @@ export const ProfileAccount = () => {
     validationSchema: profileSchema,
     validateOnChange: true,
     onSubmit: async values => {
-      if (auth.currentUser) {
-        let photoUrl = null;
-        if (imageBase64) {
-          // const storageRef = ref(
-          //   storage,
-          //   `profile-picture/user${auth.currentUser.uid}/${auth.currentUser.uid}`,
-          // );
+      // let photoUrl = null;
+      // if (imageBase64) {
+      // const storageRef = ref(
+      //   storage,
+      //   `profile-picture/user${auth.currentUser.uid}/${auth.currentUser.uid}`,
+      // );
 
-          // console.log(imageBase64);
+      // console.log(imageBase64);
 
-          // try {
-          //   await uploadString(storageRef, imageBase64, 'base64');
-          // } catch (e) {
-          //   console.error(`Upload error ${e}`);
-          // }
+      // try {
+      //   await uploadString(storageRef, imageBase64, 'base64');
+      // } catch (e) {
+      //   console.error(`Upload error ${e}`);
+      // }
 
-          // try {
-          //   photoUrl = await getDownloadURL(storageRef);
-          //   console.log(`Downloaded url: ${photoUrl}`);
-          // } catch (e) {
-          //   console.error(`Download error ${e}`);
-          // }
+      // try {
+      //   photoUrl = await getDownloadURL(storageRef);
+      //   console.log(`Downloaded url: ${photoUrl}`);
+      // } catch (e) {
+      //   console.error(`Download error ${e}`);
+      // }
+      // }
 
-          await auth.updateCurrentUser({
-            ...auth.currentUser,
-            displayName: values.name + ' ' + values.surname,
-            photoURL: imageBase64,
-            email: auth.currentUser.email,
-          });
-        }
-        console.log('Name: ', auth.currentUser!.displayName);
-        handleClickToTabs();
-      }
+      await updateProfile(auth.currentUser as User, {
+        displayName: values.name + ' ' + values.surname,
+        photoURL: imageBase64,
+      })
+        .then(() => {
+          console.log(
+            `Profile updated. Name: ${auth.currentUser!.displayName}`,
+          );
+        })
+        .catch(e => console.log(e));
+      await uploadProfileDataToServer();
+      handleClickToTabs();
+      // await uploadName();
     },
   });
 
@@ -74,8 +79,13 @@ export const ProfileAccount = () => {
       maxHeight: 100,
       maxWidth: 100,
       includeBase64: true,
-      cameraType: 'front',
       quality: 0.8,
+    }).then(image => {
+      image
+        .assets!.map(arr => arr.base64)
+        .forEach(function (data) {
+          setImageBase64(data);
+        });
     });
   };
 
@@ -88,7 +98,11 @@ export const ProfileAccount = () => {
       quality: 0.8,
       selectionLimit: 1,
     }).then(image => {
-      console.log(image.assets![0]);
+      image
+        .assets!.map(arr => arr.base64)
+        .forEach(function (data) {
+          setImageBase64(data);
+        });
     });
   };
 
@@ -115,7 +129,10 @@ export const ProfileAccount = () => {
       </Modal>
       <View style={styles.header}>
         <View style={styles.headerPos}>
-          <TouchableOpacity style={styles.backBtn} onPress={handleClickToTabs}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={handleClickToTabs}
+            disabled={!isValid}>
             <View style={styles.chevronPos}>
               <Image style={styles.chevron} source={ASSETS.chevronLeft} />
             </View>
@@ -162,7 +179,7 @@ export const ProfileAccount = () => {
           disabled={!isValid}
           style={styles.saveButton}
           onPress={handleSubmit as () => void}>
-          <Text style={styles.btnText}>Save </Text>
+          <Text style={styles.btnText}>Save</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -209,6 +226,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 30,
     backgroundColor: '#91b3fa',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
   btnText: {
     fontFamily: 'Mulish',

@@ -9,6 +9,7 @@ import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
+import {uploadEmailToServer} from '../Components/uploadData';
 
 export const SignUp = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -33,6 +34,7 @@ export const SignUp = () => {
             Alert.alert('Email already in use');
           }
         });
+      await uploadEmailToServer();
     },
   });
 
@@ -97,6 +99,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 30,
     backgroundColor: '#91b3fa',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
   textPos: {
     paddingTop: 79,

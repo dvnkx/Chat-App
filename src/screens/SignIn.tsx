@@ -9,12 +9,15 @@ import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
+import {uploadTStatusToServer} from '../Components/uploadData';
 
 export const SignIn = () => {
   const navigation = useNavigation<NavigationProps>();
+
   const handleClickToSignUp = useCallback(() => {
     navigation.navigate(Routes.SIGNUP);
   }, []);
+
   const handleClickToTabs = useCallback(() => {
     navigation.navigate(Routes.TABS);
   }, []);
@@ -32,7 +35,9 @@ export const SignIn = () => {
         .catch(function (error) {
           const errorCode = error.code;
           if (errorCode === 'auth/user-not-found') {
-            Alert.alert('Wrong email or password');
+            Alert.alert(
+              'Wrong email or password. If you want to create new account press "Sign Up"',
+            );
           }
         });
     },
@@ -78,8 +83,7 @@ export const SignIn = () => {
         </View>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={handleClickToSignUp}
-          disabled={!isValid}>
+          onPress={handleClickToSignUp}>
           <Text style={styles.signUpBtnText}>Sign up</Text>
         </TouchableOpacity>
       </View>
@@ -121,6 +125,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 30,
     backgroundColor: '#91b3fa',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
   signInBtnText: {
     fontFamily: 'Mulish',
@@ -137,6 +148,13 @@ const styles = StyleSheet.create({
     width: 76,
     height: 25,
     borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
   signUpBtnText: {
     fontFamily: 'Mulish',

@@ -17,6 +17,10 @@ import {Tabs} from './src/screens/Tabs';
 import {Chat} from './src/screens/Chat';
 import {onAuthStateChanged} from 'firebase/auth';
 import {auth} from './src/firebase/firebase';
+import {
+  uploadFStatusToServer,
+  uploadTStatusToServer,
+} from './src/Components/uploadData';
 
 type RootStackParamList = {
   Walkthrough: {name: string} | undefined;
@@ -45,6 +49,7 @@ const App = () => {
     onAuthStateChanged(auth, data => {
       if (data) {
         setAuthState(true);
+        uploadTStatusToServer();
       } else {
         setAuthState(false);
       }

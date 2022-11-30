@@ -73,6 +73,13 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 30,
     backgroundColor: '#91b3fa',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
 
   buttons: {
