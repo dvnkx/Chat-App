@@ -9,9 +9,9 @@ import {
   ScrollView,
 } from 'react-native';
 import {ASSETS} from '../utils/assets';
-import {UIStory} from '../Components/UIStory';
-import {UIChat} from '../Components/UIChat';
-import {UISearchInput} from '../Components/UISearchInput';
+import {UIStory} from '../сomponents/UIStory';
+import {UIChat} from '../сomponents/UIChat';
+import {UISearchInput} from '../сomponents/UISearchInput';
 
 export const Chats = () => {
   return (
@@ -65,7 +65,7 @@ export const Chats = () => {
         </ScrollView>
       </View>
       <View style={styles.borderPos}>
-        <View style={styles.border}></View>
+        <View style={styles.border} />
       </View>
       <View style={styles.contactList}>
         <View style={styles.inputPos}>

@@ -1,21 +1,25 @@
 import {Alert, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {UIInput} from '../Components/UIInput';
+import {UIInput} from '../сomponents/UIInput';
 import {Routes} from '../utils/routes';
 import {useNavigation} from '@react-navigation/native';
-import {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import type {NavigationProps} from '../../App';
 import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
+import {uploadEmailToServer} from '../services/userManagement';
+import {LoadingOverlay} from '../сomponents/LoadingOverlay';
 
-export const SignUp = () => {
+export const SignUp: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
 
-  const handleClickToProfile = useCallback(() => {
-    navigation.navigate(Routes.PROFILEACCOUNT);
-  }, []);
+  const [isUserSigningUp, setIsUserSigningUp] = useState<boolean>(false);
+
+  const navigateToProfile = useCallback(() => {
+    navigation.navigate(Routes.PROFILE_ACCOUNT);
+  }, [navigation]);
 
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
@@ -24,38 +28,50 @@ export const SignUp = () => {
     },
     validationSchema: authSchema,
     validateOnChange: true,
-    onSubmit: async values => {
-      await createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then(handleClickToProfile)
-        .catch(function (error) {
-          const errorCode = error.code;
-          if (errorCode == 'auth/email-already-in-use') {
-            Alert.alert('Email already in use');
-          }
-        });
+    onSubmit: async submittedValues => {
+      try {
+        setIsUserSigningUp(true);
+        await createUserWithEmailAndPassword(
+          auth,
+          submittedValues.email,
+          submittedValues.password,
+        );
+        await uploadEmailToServer(auth.currentUser!.uid, submittedValues.email);
+        setIsUserSigningUp(false);
+
+        navigateToProfile();
+      } catch (e: any) {
+        if (e.code.includes('auth/email-already-in-use')) {
+          Alert.alert('Email already in use');
+        }
+      }
     },
   });
 
   return (
     <View style={styles.container}>
+      {isUserSigningUp && <LoadingOverlay />}
       <View style={styles.textPos}>
         <Text style={styles.signUpText}>Sign up</Text>
       </View>
       <View style={styles.input}>
+        {/*TODO make the same inputs in sign in screen*/}
         <UIInput
           placeholder={'Enter your email'}
           keyboardType={'email-address'}
           value={values.email}
-          onChange={handleChange('email')}
+          onChangeText={handleChange('email')}
           error={errors.email}
           autoCorrect={false}
+          autoCapitalize="none"
         />
         <UIInput
           placeholder={'Enter your password'}
           value={values.password}
-          onChange={handleChange('password')}
+          onChangeText={handleChange('password')}
           error={errors.password}
           autoCorrect={false}
+          secureTextEntry
         />
       </View>
       <View style={styles.btnPos}>
@@ -97,6 +113,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 30,
     backgroundColor: '#91b3fa',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
   },
   textPos: {
     paddingTop: 79,

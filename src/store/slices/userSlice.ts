@@ -1,14 +1,14 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-export type User = {
+export interface IUserStore {
   email: null;
   id: null;
   name: null;
   surname?: null;
   image?: string;
-};
+}
 
-const initialState: User = {
+const initialState: IUserStore = {
   email: null,
   id: null,
   name: null,
@@ -16,7 +16,7 @@ const initialState: User = {
   image: undefined,
 };
 
-const userSlice = createSlice({
+export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
@@ -29,8 +29,14 @@ const userSlice = createSlice({
       state.surname = action.payload.surname;
       state.image = action.payload.image;
     },
+    logOut(state) {
+      state.email = null;
+      state.id = null;
+      state.name = null;
+      state.surname = null;
+      state.image = undefined;
+    },
   },
 });
 
-export const {setUser, setInfo} = userSlice.actions;
 export default userSlice.reducer;

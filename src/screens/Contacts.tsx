@@ -1,60 +1,91 @@
 import {ASSETS} from '../utils/assets';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Image} from 'react-native';
-import {ScrollView, TextInput} from 'react-native-gesture-handler';
-import {UIContacts} from '../Components/UIContacts';
-import {auth} from '../firebase/firebase';
-import {UISearchInput} from '../Components/UISearchInput';
+import {ScrollView} from 'react-native-gesture-handler';
+import {UIContacts} from '../сomponents/UIContacts';
+import {collection, DocumentData, getDocs} from 'firebase/firestore';
+import {UISearchInput} from '../сomponents/UISearchInput';
+import {useEffect, useMemo, useState} from 'react';
+import debounce from 'lodash.debounce';
+import {auth, db} from '../firebase/firebase';
+import {useNavigation} from '@react-navigation/native';
 
 export const Contacts = () => {
+  const navigation = useNavigation();
+  const [search, setSearch] = useState('');
+  const [contacts, setContacts] = useState<DocumentData[]>([]);
+
+  const debouncedResult = useMemo(() => {
+    return debounce(setSearch, 300);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedResult.cancel();
+    };
+  });
+
+  // let listToDisplay = contacts;
+  // if (search !== '') {
+  //   listToDisplay = contacts.filter(contact => {
+  //     return contact.includes(search);
+  //   });
+  // }
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const data: DocumentData[] = [];
+      const qSnapshot = await getDocs(collection(db, 'Users'));
+      qSnapshot.forEach(doc => {
+        if (doc === null) {
+          Alert.alert('Congratulations, you first at my app');
+        } else {
+          data.push(doc.data());
+        }
+      });
+      setContacts(data);
+    };
+    getUsers();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Contacts</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('kek');
+          }}>
           <Image style={styles.headerBtn} source={ASSETS.plus} />
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <UISearchInput placeholder="Search" />
+        <View style={styles.input}>
+          <UISearchInput
+            placeholder="Search"
+            keyboardType="email-address"
+            value={search}
+            onChange={debouncedResult}
+            autoCorrect={false}
+          />
+        </View>
         <ScrollView style={styles.scroll}>
-          <UIContacts
-            avatar={ASSETS.women1}
-            userName={'Natalia'}
-            status={'Online'}
-            onlineStatus={true}
-          />
-          <UIContacts
-            avatar={ASSETS.male}
-            userName={'Hipster'}
-            status={'Online'}
-            onlineStatus={true}
-          />
-          <UIContacts
-            avatar={ASSETS.guy}
-            userName={'Cool Man'}
-            status={'Last seen yesterday'}
-            onlineStatus={false}
-          />
-          <UIContacts
-            avatar={ASSETS.women2}
-            userName={'Alexandra'}
-            status={'Last seen 3 hours ago'}
-            onlineStatus={false}
-          />
-          <UIContacts
-            avatar={ASSETS.defaultAvatarImage}
-            userName={'Unknown'}
-            status={'Online'}
-            onlineStatus={true}
-          />
-          <UIContacts
-            avatar={ASSETS.defaultAvatarImage}
-            userName={'Jacky'}
-            status={'Last seen 1 week ago'}
-            onlineStatus={false}
-          />
+          {contacts.map(({name, onlineStatus, email}) => {
+            if (email === auth.currentUser!.email) {
+              return null;
+            } else {
+              return (
+                <UIContacts
+                  key={Math.floor(Math.random() * 1000)}
+                  userName={name}
+                  onlineStatus={onlineStatus}
+                  status={onlineStatus === true ? 'Online' : 'Offline'}
+                  avatar={ASSETS.defaultAvatarImage}
+                />
+              );
+            }
+          })}
         </ScrollView>
       </View>
     </View>
@@ -94,5 +125,25 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingTop: 16,
+  },
+  textInput: {
+    width: 327,
+    height: 36,
+    borderRadius: 5,
+    backgroundColor: '#F0F0F0',
+    paddingLeft: 32,
+    fontFamily: 'Mulish',
+  },
+  input: {
+    justifyContent: 'center',
+  },
+  inputIcon: {
+    width: 16,
+    height: 16,
+    opacity: 0.3,
+  },
+  iconPos: {
+    position: 'absolute',
+    paddingLeft: 8,
   },
 });

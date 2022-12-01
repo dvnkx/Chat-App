@@ -6,13 +6,14 @@ import {Routes} from '../utils/routes';
 import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import {auth} from '../firebase/firebase';
-import {UIOptions} from '../Components/UIOptions';
+import {UIOptions} from '../сomponents/UIOptions';
+import {uploadFStatusToServer} from '../services/userManagement';
 
 export const More = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickToProfile = useCallback(() => {
-    navigation.navigate(Routes.PROFILEACCOUNT);
+    navigation.navigate(Routes.PROFILE_ACCOUNT);
   }, []);
 
   const handleClickToContacts = useCallback(() => {
@@ -23,17 +24,12 @@ export const More = () => {
     navigation.navigate(Routes.CHATS);
   }, []);
 
-  const handleClickToSignOut = useCallback(() => {
+  const handleClickToSignOut = useCallback(async () => {
+    await uploadFStatusToServer();
+    await auth.signOut().catch(e => {
+      Alert.alert(e);
+    });
     navigation.navigate(Routes.WALKTHROUGH);
-  }, []);
-
-  const signOut = useCallback(() => {
-    auth
-      .signOut()
-      .then(handleClickToSignOut)
-      .catch(e => {
-        Alert.alert(e);
-      });
   }, []);
 
   return (
@@ -56,7 +52,7 @@ export const More = () => {
               <View style={styles.userData}>
                 <View style={styles.namePos}>
                   <Text style={styles.text}>
-                    Name {auth.currentUser!.displayName}
+                    {auth.currentUser!.displayName}
                   </Text>
                 </View>
                 <Text style={styles.userEmail}>{auth.currentUser!.email}</Text>
@@ -86,7 +82,7 @@ export const More = () => {
           <UIOptions icon={ASSETS.data} text={'Data Usage'} />
         </View>
         <View style={styles.borderPos}>
-          <View style={styles.border}></View>
+          <View style={styles.border} />
         </View>
         <View style={styles.tabsContent}>
           <UIOptions icon={ASSETS.help} text={'Help'} />
@@ -94,7 +90,7 @@ export const More = () => {
           <UIOptions
             icon={ASSETS.signOut}
             text={'Sign Out'}
-            navigate={signOut}
+            navigate={handleClickToSignOut}
           />
         </View>
       </View>

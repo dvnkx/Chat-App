@@ -1,9 +1,9 @@
 export enum Routes {
   WALKTHROUGH = 'Walkthrough',
-  SIGNIN = 'SignIn',
+  SIGN_IN = 'SignIn',
   SIGNUP = 'SignUp',
   CONTACTS = 'Contacts',
-  PROFILEACCOUNT = 'ProfileAccount',
+  PROFILE_ACCOUNT = 'ProfileAccount',
   CHATS = 'Chats',
 
   TABS = 'Tabs',

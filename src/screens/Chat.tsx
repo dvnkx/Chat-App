@@ -42,11 +42,11 @@ export const Chat = () => {
         </View>
       </View>
       <View style={styles.borderPos}>
-        <View style={styles.border}></View>
+        <View style={styles.border} />
       </View>
-      <View style={styles.chatPos}></View>
+      <View style={styles.chatPos} />
       <View style={styles.borderPos}>
-        <View style={styles.border}></View>
+        <View style={styles.border} />
       </View>
       <View style={styles.messageField}>
         <View style={styles.messageFieldPos}>
