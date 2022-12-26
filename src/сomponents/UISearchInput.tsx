@@ -7,12 +7,13 @@ import {
   KeyboardTypeOptions,
 } from 'react-native';
 import {ASSETS} from '../utils/assets';
+import {AppColors} from '../utils/colors';
 
 interface ISearchInput {
   placeholder: string;
   keyboardType?: KeyboardTypeOptions;
-  value: string;
-  onChange: any;
+  value?: string;
+  onChange?: any;
   autoCorrect?: boolean;
 }
 
@@ -31,6 +32,7 @@ export const UISearchInput: React.FC<ISearchInput> = ({
       onChangeText={onChange}
       style={styles.inputStyle}
       autoCorrect={autoCorrect}
+      autoCapitalize="none"
     />
     <View style={styles.iconPos}>
       <Image style={styles.inputIcon} source={ASSETS.search} />
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
     width: 327,
     height: 36,
     borderRadius: 5,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: AppColors.inputFont,
     fontFamily: 'Mulish',
     paddingLeft: 32,
   },

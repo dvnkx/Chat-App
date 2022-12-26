@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
 import {UIInput} from '../сomponents/UIInput';
 import {useCallback} from 'react';
@@ -9,18 +9,21 @@ import {useFormik} from 'formik';
 import {authSchema} from '../utils/schemas';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
-import {uploadTStatusToServer} from '../services/userManagement';
+import {LoadingOverlay} from '../сomponents/LoadingOverlay';
+import {AppColors} from '../utils/colors';
 
 export const SignIn = () => {
   const navigation = useNavigation<NavigationProps>();
 
-  const handleClickToSignUp = useCallback(() => {
-    navigation.navigate(Routes.SIGNUP);
-  }, []);
+  const [isUserSignIn, setIsUserSignIn] = useState<boolean>(false);
 
-  const handleClickToTabs = useCallback(() => {
-    navigation.navigate(Routes.TABS);
-  }, []);
+  const navigateToSignUp = useCallback(() => {
+    navigation.navigate(Routes.SIGN_UP);
+  }, [navigation]);
+
+  const navigateToTabs = useCallback(() => {
+    navigation.navigate(Routes.TABS, {screen: Routes.CHATS});
+  }, [navigation]);
 
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
@@ -29,22 +32,37 @@ export const SignIn = () => {
     },
     validationSchema: authSchema,
     validateOnChange: true,
-    onSubmit: async values => {
-      await signInWithEmailAndPassword(auth, values.email, values.password)
-        .then(handleClickToTabs)
-        .catch(function (error) {
-          const errorCode = error.code;
-          if (errorCode === 'auth/user-not-found') {
-            Alert.alert(
-              'Wrong email or password. If you want to create new account press "Sign Up"',
-            );
-          }
-        });
+    onSubmit: async submitedValues => {
+      try {
+        setIsUserSignIn(true);
+        await signInWithEmailAndPassword(
+          auth,
+          submitedValues.email,
+          submitedValues.password,
+        );
+        setIsUserSignIn(false);
+        navigateToTabs();
+      } catch (e: any) {
+        if (e.code.includes('auth/user-not-found')) {
+          Alert.alert(
+            'Wrong email!',
+            'If you want to create a new account press "Sign Up"',
+          );
+          setIsUserSignIn(false);
+        } else if (e.code.includes('auth/wrong-password')) {
+          Alert.alert(
+            'Wrong password!',
+            'If you forgot your password now we cant help you, password change feauter will be add in future.',
+          );
+          setIsUserSignIn(false);
+        }
+      }
     },
   });
 
   return (
     <View style={styles.container}>
+      {isUserSignIn && <LoadingOverlay />}
       <View style={styles.textPos}>
         <Text style={styles.signInText}>
           Enter your email address and password
@@ -63,6 +81,7 @@ export const SignIn = () => {
           onChangeText={handleChange('email')}
           error={errors.email}
           autoCorrect={false}
+          autoCapitalize="none"
         />
         <UIInput
           placeholder={'Enter your password'}
@@ -70,6 +89,7 @@ export const SignIn = () => {
           onChangeText={handleChange('password')}
           error={errors.password}
           autoCorrect={false}
+          securedInput={true}
         />
       </View>
       <View style={styles.buttons}>
@@ -77,13 +97,14 @@ export const SignIn = () => {
           <TouchableOpacity
             style={styles.signInBtn}
             onPress={handleSubmit as () => void}
+            // onPress={navigateToTabs}
             disabled={!isValid}>
             <Text style={styles.signInBtnText}>Sign in</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={handleClickToSignUp}>
+          onPress={navigateToSignUp}>
           <Text style={styles.signUpBtnText}>Sign up</Text>
         </TouchableOpacity>
       </View>
@@ -124,7 +145,7 @@ const styles = StyleSheet.create({
     width: 327,
     height: 46,
     borderRadius: 30,
-    backgroundColor: '#91b3fa',
+    backgroundColor: AppColors.primary,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

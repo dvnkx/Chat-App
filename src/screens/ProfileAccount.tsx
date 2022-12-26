@@ -9,140 +9,85 @@ import {useFormik} from 'formik';
 import {profileSchema} from '../utils/schemas';
 import {auth} from '../firebase/firebase';
 import {ASSETS} from '../utils/assets';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {uploadProfileDataToServer} from '../services/userManagement';
 import {updateProfile, User} from 'firebase/auth';
 import {LoadingOverlay} from '../сomponents/LoadingOverlay';
-import {first} from 'lodash';
+import Toast from 'react-native-toast-message';
+import {useStore} from 'react-redux';
+import {userSlice} from '../store/slices/userSlice';
+import {useAppSelector} from '../hooks/redux';
 
 export const ProfileAccount = () => {
-  const [imageBase64, setImageBase64] = useState<any>();
-  const [modalActive, setModalActive] = useState(false);
   const [isDataUploading, setIsDataUploading] = useState<boolean>(false);
 
+  const store = useStore();
+  const userAvatar = useAppSelector(state => state.user.image);
+
   const navigation = useNavigation<NavigationProps>();
-  const handleClickToTabs = useCallback(() => {
-    navigation.navigate(Routes.TABS);
+  const navigateToTabs = useCallback(() => {
+    navigation.navigate(Routes.TABS, {screen: Routes.MORE});
   }, [navigation]);
 
   const avatar = ASSETS.defaultAvatarImage;
+
+  const showErrorToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Something went wrong❗️',
+      text2: 'Please, try again.',
+    });
+  };
 
   const {values, errors, isValid, handleChange, handleSubmit} = useFormik({
     initialValues: {
       name: '',
       surname: '',
     },
+
     validationSchema: profileSchema,
     validateOnChange: true,
     onSubmit: async submittedValues => {
-      // let photoUrl = null;
-      // if (imageBase64) {
-      // const storageRef = ref(
-      //   storage,
-      //   `profile-picture/user${auth.currentUser.uid}/${auth.currentUser.uid}`,
-      // );
-
-      // console.log(imageBase64);
-
-      // try {
-      //   await uploadString(storageRef, imageBase64, 'base64');
-      // } catch (e) {
-      //   console.error(`Upload error ${e}`);
-      // }
-
-      // try {
-      //   photoUrl = await getDownloadURL(storageRef);
-      //   console.log(`Downloaded url: ${photoUrl}`);
-      // } catch (e) {
-      //   console.error(`Download error ${e}`);
-      // }
-      // }
-
       try {
         setIsDataUploading(true);
         await updateProfile(auth.currentUser as User, {
           displayName: submittedValues.name + ' ' + submittedValues.surname,
-          // photoURL: imageBase64,
         });
-        console.log(`Profile updated. Name: ${auth.currentUser!.displayName}`);
 
-        await uploadProfileDataToServer();
+        store.dispatch(
+          userSlice.actions.setInfo({
+            name: submittedValues.name,
+            surname: submittedValues.surname,
+            email: auth.currentUser!.email,
+          }),
+        );
+
+        await uploadProfileDataToServer(
+          auth.currentUser!.uid,
+          submittedValues.name + ' ' + submittedValues.surname,
+        );
         setIsDataUploading(false);
-
-        handleClickToTabs();
+        navigateToTabs();
       } catch (e) {
         console.error(e);
         setIsDataUploading(false);
-        //TODO show error toast and ask user to try again
-        //https://github.com/calintamas/react-native-toast-message/blob/HEAD/docs/quick-start.md
+        showErrorToast();
       }
-
-      // await uploadName();
     },
   });
 
-  const takePhotoFromCamera = async () => {
-    const image = await launchCamera({
-      mediaType: 'photo',
-      maxHeight: 100,
-      maxWidth: 100,
-      includeBase64: true,
-      quality: 0.8,
-    });
-
-    const firstImage = first(image.assets);
-
-    if (firstImage) {
-      setImageBase64(firstImage.base64);
-    }
-  };
-
-  const takePhotoFromGallery = async () => {
-    const image = await launchImageLibrary({
-      mediaType: 'photo',
-      maxHeight: 100,
-      maxWidth: 100,
-      includeBase64: true,
-      quality: 0.8,
-      selectionLimit: 1,
-    });
-
-    const firstImage = first(image.assets);
-
-    if (firstImage) {
-      setImageBase64(firstImage.base64);
-    }
-  };
-
-  const onToggleModal = useCallback(() => {
-    setModalActive(prev => !prev);
-  }, []);
+  const navigateToChangeAvatar = useCallback(() => {
+    navigation.navigate(Routes.CHANGE_AVATAR);
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
+      <Toast position="bottom" bottomOffset={120} />
       {isDataUploading && <LoadingOverlay />}
-      <Modal animationType="slide" transparent={true} visible={modalActive}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Pressable style={styles.modalButton} onPress={takePhotoFromCamera}>
-              <Text>Make Photo</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalButton}
-              onPress={takePhotoFromGallery}>
-              <Text>Choose photo</Text>
-            </Pressable>
-            <Pressable style={styles.modalButton} onPress={onToggleModal}>
-              <Text>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
       <View style={styles.header}>
         <View style={styles.headerPos}>
           <TouchableOpacity
             style={styles.backBtn}
-            onPress={handleClickToTabs}
+            onPress={navigateToTabs}
             disabled={!isValid}>
             <View style={styles.chevronPos}>
               <Image style={styles.chevron} source={ASSETS.chevronLeft} />
@@ -153,16 +98,16 @@ export const ProfileAccount = () => {
       </View>
       <View style={styles.avatarPos}>
         <View style={styles.avatar}>
-          <TouchableOpacity onPress={onToggleModal}>
+          <TouchableOpacity onPress={navigateToChangeAvatar}>
             <Image
               style={
-                ASSETS.defaultAvatarImage && imageBase64
+                ASSETS.defaultAvatarImage && userAvatar
                   ? styles.avatarImg
                   : styles.defaultAvatarImg
               }
               source={
-                imageBase64
-                  ? {uri: `data:image/jpeg;base64,${imageBase64}`}
+                userAvatar
+                  ? {uri: `data:image/jpeg;base64,${userAvatar}`}
                   : avatar
               }
             />
@@ -175,12 +120,14 @@ export const ProfileAccount = () => {
           value={values.name}
           onChangeText={handleChange('name')}
           error={errors.name}
+          autoCorrect={false}
         />
         <UIInput
           placeholder="Enter your surname (Optional)"
           value={values.surname}
           onChangeText={handleChange('surname')}
           error={errors.surname}
+          autoCorrect={false}
         />
       </View>
       <View style={styles.btnPos}>

@@ -17,11 +17,11 @@ export const UIContacts: React.FC<IContactsProps> = ({
   return (
     <View style={styles.user}>
       <Image style={styles.avatar} source={avatar} />
-      {onlineStatus ? (
+      {onlineStatus && (
         <View style={styles.statusPos}>
           <View style={styles.status} />
         </View>
-      ) : null}
+      )}
       <View style={styles.userData}>
         <Text style={styles.userName}>{userName}</Text>
         <Text style={styles.userStatus}>{status}</Text>

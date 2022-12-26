@@ -4,14 +4,22 @@ import {Contacts} from './Contacts';
 import {More} from './More';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useCallback} from 'react';
+import {Routes} from '../utils/routes';
+import {RootStackParamList} from '../../App';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 interface IGetIconProps {
   focused: boolean;
   color: string;
   size: number;
 }
+
+export type BottomTabParamList = {
+  Contacts: undefined;
+  Chats: undefined;
+  More: undefined;
+};
 
 export const Tabs = () => {
   const getIcon = useCallback(
@@ -37,20 +45,17 @@ export const Tabs = () => {
   return (
     <Tab.Navigator initialRouteName="Contacts">
       <Tab.Screen
-        // TODO: replace with Routes
-        name="Contacts"
+        name={Routes.CONTACTS}
         component={Contacts}
         options={getScreenOptions('people')}
       />
       <Tab.Screen
-        // TODO: replace with Routes
-        name="Chats"
+        name={Routes.CHATS}
         component={Chats}
         options={getScreenOptions('chatbubble')}
       />
       <Tab.Screen
-        // TODO: replace with Routes
-        name="More"
+        name={Routes.MORE}
         component={More}
         options={getScreenOptions('options')}
       />

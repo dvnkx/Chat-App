@@ -5,7 +5,7 @@ export interface IUserStore {
   id: null;
   name: null;
   surname?: null;
-  image?: string;
+  image?: null;
 }
 
 const initialState: IUserStore = {
@@ -13,7 +13,7 @@ const initialState: IUserStore = {
   id: null,
   name: null,
   surname: null,
-  image: undefined,
+  image: null,
 };
 
 export const userSlice = createSlice({
@@ -27,6 +27,7 @@ export const userSlice = createSlice({
     setInfo(state, action) {
       state.name = action.payload.name;
       state.surname = action.payload.surname;
+      state.email = action.payload.email;
       state.image = action.payload.image;
     },
     logOut(state) {
@@ -34,7 +35,7 @@ export const userSlice = createSlice({
       state.id = null;
       state.name = null;
       state.surname = null;
-      state.image = undefined;
+      state.image = null;
     },
   },
 });

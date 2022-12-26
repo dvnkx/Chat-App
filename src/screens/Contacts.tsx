@@ -1,62 +1,56 @@
 import {ASSETS} from '../utils/assets';
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Image} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {UIContacts} from '../сomponents/UIContacts';
-import {collection, DocumentData, getDocs} from 'firebase/firestore';
+import {doc, DocumentData, getDoc} from 'firebase/firestore';
 import {UISearchInput} from '../сomponents/UISearchInput';
-import {useEffect, useMemo, useState} from 'react';
-import debounce from 'lodash.debounce';
+import {useCallback, useEffect, useState} from 'react';
 import {auth, db} from '../firebase/firebase';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {Routes} from '../utils/routes';
+import {NavigationProps} from '../../App';
+import {usersDocRef} from '../services/userManagement';
 
 export const Contacts = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
   const [search, setSearch] = useState('');
   const [contacts, setContacts] = useState<DocumentData[]>([]);
+  const isFocused = useIsFocused();
 
-  const debouncedResult = useMemo(() => {
-    return debounce(setSearch, 300);
+  const navigateToSearchUsers = useCallback(async () => {
+    navigation.navigate(Routes.SEARCH_USER);
+  }, [navigation]);
+
+  const getContacts = useCallback(async () => {
+    const id = auth.currentUser!.uid;
+    try {
+      const docSnap = await getDoc(usersDocRef(id));
+      if (docSnap.exists()) {
+        setContacts(docSnap.data().contacts);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
 
-  useEffect(() => {
-    return () => {
-      debouncedResult.cancel();
-    };
-  });
-
-  // let listToDisplay = contacts;
-  // if (search !== '') {
-  //   listToDisplay = contacts.filter(contact => {
-  //     return contact.includes(search);
-  //   });
-  // }
+  let listToDisplay = contacts;
+  if (search !== '') {
+    listToDisplay = contacts.filter(contact => {
+      return contact.name.includes(search);
+    });
+  }
 
   useEffect(() => {
-    const getUsers = async () => {
-      const data: DocumentData[] = [];
-      const qSnapshot = await getDocs(collection(db, 'Users'));
-      qSnapshot.forEach(doc => {
-        if (doc === null) {
-          Alert.alert('Congratulations, you first at my app');
-        } else {
-          data.push(doc.data());
-        }
-      });
-      setContacts(data);
-    };
-    getUsers();
-  }, []);
+    getContacts();
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Contacts</Text>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('kek');
-          }}>
+        <TouchableOpacity onPress={navigateToSearchUsers}>
           <Image style={styles.headerBtn} source={ASSETS.plus} />
         </TouchableOpacity>
       </View>
@@ -66,15 +60,13 @@ export const Contacts = () => {
             placeholder="Search"
             keyboardType="email-address"
             value={search}
-            onChange={debouncedResult}
+            onChange={setSearch}
             autoCorrect={false}
           />
         </View>
         <ScrollView style={styles.scroll}>
-          {contacts.map(({name, onlineStatus, email}) => {
-            if (email === auth.currentUser!.email) {
-              return null;
-            } else {
+          {contacts &&
+            listToDisplay.map(({name, onlineStatus}) => {
               return (
                 <UIContacts
                   key={Math.floor(Math.random() * 1000)}
@@ -84,8 +76,7 @@ export const Contacts = () => {
                   avatar={ASSETS.defaultAvatarImage}
                 />
               );
-            }
-          })}
+            })}
         </ScrollView>
       </View>
     </View>

@@ -7,30 +7,33 @@ import {useNavigation} from '@react-navigation/native';
 import {useCallback} from 'react';
 import {auth} from '../firebase/firebase';
 import {UIOptions} from '../сomponents/UIOptions';
-import {uploadFStatusToServer} from '../services/userManagement';
+import {uploadUserOnlineStatus} from '../services/userManagement';
+import {useAppSelector} from '../hooks/redux';
 
 export const More = () => {
   const navigation = useNavigation<NavigationProps>();
 
   const handleClickToProfile = useCallback(() => {
     navigation.navigate(Routes.PROFILE_ACCOUNT);
-  }, []);
+  }, [navigation]);
 
   const handleClickToContacts = useCallback(() => {
     navigation.navigate(Routes.CONTACTS);
-  }, []);
+  }, [navigation]);
 
   const handleClickToChats = useCallback(() => {
     navigation.navigate(Routes.CHATS);
-  }, []);
+  }, [navigation]);
 
   const handleClickToSignOut = useCallback(async () => {
-    await uploadFStatusToServer();
+    await uploadUserOnlineStatus(auth.currentUser!.uid, false);
     await auth.signOut().catch(e => {
       Alert.alert(e);
     });
     navigation.navigate(Routes.WALKTHROUGH);
-  }, []);
+  }, [navigation]);
+
+  const {name, surname} = useAppSelector(state => state.user);
 
   return (
     <View style={styles.container}>
@@ -52,10 +55,12 @@ export const More = () => {
               <View style={styles.userData}>
                 <View style={styles.namePos}>
                   <Text style={styles.text}>
-                    {auth.currentUser!.displayName}
+                    {name === null
+                      ? auth.currentUser?.displayName
+                      : name + ' ' + surname}
                   </Text>
                 </View>
-                <Text style={styles.userEmail}>{auth.currentUser!.email}</Text>
+                <Text style={styles.userEmail}>{auth.currentUser?.email}</Text>
               </View>
               <View style={styles.chevronPos}>
                 <Image style={styles.chevron} source={ASSETS.chevronRight} />

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
   ScrollView,
 } from 'react-native';
 import {ASSETS} from '../utils/assets';

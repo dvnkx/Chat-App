@@ -14,14 +14,15 @@ import {Routes} from '../utils/routes';
 
 export const Chat = () => {
   const navigation = useNavigation<NavigationProps>();
-  const handleClickToTabs = useCallback(() => {
-    navigation.navigate(Routes.TABS);
-  }, []);
+  const navigateToTabs = useCallback(() => {
+    navigation.navigate(Routes.TABS, {screen: Routes.CHATS});
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerPos}>
-          <TouchableOpacity style={styles.backBtn} onPress={handleClickToTabs}>
+          <TouchableOpacity style={styles.backBtn} onPress={navigateToTabs}>
             <View style={styles.chevronPos}>
               <Image source={ASSETS.chevronLeft} style={styles.chevron} />
             </View>
@@ -56,7 +57,11 @@ export const Chat = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.inputMessagePos}>
-            <TextInput style={styles.inputMessage} />
+            <TextInput
+              autoCorrect={true}
+              autoCapitalize={'words'}
+              style={styles.inputMessage}
+            />
           </View>
           <View>
             <TouchableOpacity style={styles.sendBtn}>

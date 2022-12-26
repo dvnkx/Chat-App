@@ -1,11 +1,11 @@
 import React from 'react';
+import {ImageSourcePropType} from 'react-native';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ASSETS} from '../utils/assets';
 
 interface IOptionsProps {
   navigate?: () => void;
-  //TODO: fix any type
-  icon: any;
+  icon: ImageSourcePropType;
   text: string;
 }
 

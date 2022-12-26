@@ -1,4 +1,7 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   createStackNavigator,
@@ -13,33 +16,31 @@ import {setStore} from './src/store/store';
 import './src/firebase/firebase';
 import {ShavronLeft} from './src/сomponents/ChavronLeft';
 import {ProfileAccount} from './src/screens/ProfileAccount';
-import {Tabs} from './src/screens/Tabs';
+import {BottomTabParamList, Tabs} from './src/screens/Tabs';
 import {Chat} from './src/screens/Chat';
 import {onAuthStateChanged} from 'firebase/auth';
 import {auth} from './src/firebase/firebase';
-import {
-  uploadTStatusToServer,
-  uploadUserOnlineStatus,
-} from './src/services/userManagement';
-import {setUser, userSlice} from './src/store/slices/userSlice';
+import {uploadUserOnlineStatus} from './src/services/userManagement';
+import {userSlice} from './src/store/slices/userSlice';
 import {Routes} from './src/utils/routes';
-import {View} from 'react-native';
+import {SearchUser} from './src/screens/SearchUser';
+import {ChangeAvatar} from './src/screens/ChangeAvatar';
 
-type RootStackParamList = {
+export type RootStackParamList = {
   Walkthrough: {name: string} | undefined;
   SignIn: {name: string} | undefined;
   SignUp: {name: string} | undefined;
-  Contacts: {name: string} | undefined;
   ProfileAccount: {name: string} | undefined;
+  Tabs: NavigatorScreenParams<BottomTabParamList>;
+  Contacts: {name: string} | undefined;
   More: {name: string} | undefined;
   Chats: {name: string} | undefined;
-  Tabs: {name?: string} | undefined;
-  Chat: {name?: string} | undefined;
+  Chat: {name: string} | undefined;
+  SearchUser: {name: string} | undefined;
+  ChangeAvatar: {name: string} | undefined;
 };
 
 export type NavigationProps = StackNavigationProp<RootStackParamList>;
-
-export type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -77,6 +78,12 @@ const App = () => {
     headerTitle: '',
     headerShadowVisible: false,
     headerBackImage: () => <ShavronLeft />,
+    gestureEnabled: false,
+  };
+
+  const tabsSettings = {
+    headerShown: false,
+    gestureEnabled: false,
   };
 
   return (
@@ -96,45 +103,55 @@ const App = () => {
             options={authSettings}
           />
           <RootStack.Screen
-            // TODO: replace with Routes
-            name="SignUp"
+            name={Routes.SIGN_UP}
             component={SignUp}
             options={authSettings}
           />
           {authState && (
             <RootStack.Group>
               <RootStack.Screen
-                // TODO: replace with Routes
-                name="ProfileAccount"
+                name={Routes.PROFILE_ACCOUNT}
                 component={ProfileAccount}
+                options={tabsSettings}
+              />
+              <RootStack.Screen
+                name={Routes.CHANGE_AVATAR}
+                component={ChangeAvatar}
                 options={{
+                  presentation: 'modal',
+                  cardStyle: {
+                    marginTop: 240,
+                    marginBottom: 340,
+                    marginLeft: 40,
+                    marginRight: 40,
+                    borderRadius: 15,
+                  },
                   headerShown: false,
                 }}
               />
               <RootStack.Screen
-                // TODO: replace with Routes
-                name="Tabs"
+                name={Routes.TABS}
                 component={Tabs}
-                options={{
-                  headerShown: false,
-                }}
+                options={tabsSettings}
               />
               <RootStack.Screen
-                // TODO: replace with Routes
-                name="Chat"
+                name={Routes.CHAT}
                 component={Chat}
-                options={{
-                  headerShown: false,
-                }}
+                options={tabsSettings}
               />
               <RootStack.Screen
-                name="kek"
-                component={() => <View style={{backgroundColor: 'red'}} />}
+                name={Routes.SEARCH_USER}
+                component={SearchUser}
                 options={{
                   presentation: 'modal',
                   cardStyle: {
                     marginTop: 75,
+                    marginBottom: 350,
+                    marginLeft: 24,
+                    marginRight: 24,
+                    borderRadius: 15,
                   },
+                  headerShown: false,
                 }}
               />
             </RootStack.Group>

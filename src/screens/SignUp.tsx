@@ -11,6 +11,7 @@ import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
 import {uploadEmailToServer} from '../services/userManagement';
 import {LoadingOverlay} from '../сomponents/LoadingOverlay';
+import {AppColors} from '../utils/colors';
 
 export const SignUp: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -37,8 +38,8 @@ export const SignUp: React.FC = () => {
           submittedValues.password,
         );
         await uploadEmailToServer(auth.currentUser!.uid, submittedValues.email);
-        setIsUserSigningUp(false);
 
+        setIsUserSigningUp(false);
         navigateToProfile();
       } catch (e: any) {
         if (e.code.includes('auth/email-already-in-use')) {
@@ -55,7 +56,6 @@ export const SignUp: React.FC = () => {
         <Text style={styles.signUpText}>Sign up</Text>
       </View>
       <View style={styles.input}>
-        {/*TODO make the same inputs in sign in screen*/}
         <UIInput
           placeholder={'Enter your email'}
           keyboardType={'email-address'}
@@ -71,7 +71,7 @@ export const SignUp: React.FC = () => {
           onChangeText={handleChange('password')}
           error={errors.password}
           autoCorrect={false}
-          secureTextEntry
+          securedInput
         />
       </View>
       <View style={styles.btnPos}>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     width: 327,
     height: 46,
     borderRadius: 30,
-    backgroundColor: '#91b3fa',
+    backgroundColor: AppColors.primary,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
